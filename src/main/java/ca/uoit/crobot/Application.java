@@ -14,9 +14,7 @@ public class Application {
         final Pin[] pins = RaspiPin.allPins();
         final GpioPinDigitalOutput[] devices = new GpioPinDigitalOutput[pins.length];
 
-        for (int i = 0; i < pins.length; i++) {
-            devices[i] = controller.provisionDigitalOutputPin(pins[i]);
-        }
+        System.out.println("Found " + pins.length + " pins.");
 
         while (true) {
             System.out.println("Enter pin address: ");
@@ -28,6 +26,9 @@ public class Application {
 
             for (int i = 0; i < pins.length; i++) {
                 if (pins[i].getAddress() == address) {
+                    if (devices[i] == null) {
+                        devices[i] = controller.provisionDigitalOutputPin(pins[i]);
+                    }
                     device = devices[i];
                     break;
                 }
