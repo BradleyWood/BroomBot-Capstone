@@ -18,7 +18,7 @@ public class Application {
 
         while (true) {
             System.out.println("Enter pin address: ");
-            final int address = scanner.nextInt();
+            final int address = Integer.parseInt(scanner.nextLine());
             System.out.println("Enter true to set state to HIGH");
             final boolean high = scanner.nextLine().trim().toLowerCase().equals("true");
 
