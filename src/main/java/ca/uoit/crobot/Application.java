@@ -11,14 +11,32 @@ public class Application {
 
         final Scanner scanner = new Scanner(System.in);
 
+        final Pin[] pins = RaspiPin.allPins();
+        final GpioPinDigitalOutput[] devices = new GpioPinDigitalOutput[pins.length];
+
+        for (int i = 0; i < pins.length; i++) {
+            devices[i] = controller.provisionDigitalOutputPin(pins[i]);
+        }
+
         while (true) {
             System.out.println("Enter pin address: ");
             final int address = scanner.nextInt();
             System.out.println("Enter true to set state to HIGH");
             final boolean high = scanner.nextLine().trim().toLowerCase().equals("true");
 
-            final Pin pin = RaspiPin.getPinByAddress(address);
-            final GpioPinDigitalOutput device = controller.provisionDigitalOutputPin(pin);
+            GpioPinDigitalOutput device = null;
+
+            for (int i = 0; i < pins.length; i++) {
+                if (pins[i].getAddress() == address) {
+                    device = devices[i];
+                    break;
+                }
+            }
+
+            if (device == null) {
+                System.out.println("Device not found");
+                break;
+            }
 
             if (high) {
                 device.setState(PinState.HIGH);
@@ -26,7 +44,7 @@ public class Application {
                 device.setState(PinState.LOW);
             }
 
-            System.out.println("Pin: " + address + " name: " + pin.getName() + " high=" + high);
+            System.out.println("Pin: " + address + " name: " + device.getPin().getName() + " high=" + high);
 
             device.setShutdownOptions(true, PinState.LOW);
         }
