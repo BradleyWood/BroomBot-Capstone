@@ -2,31 +2,33 @@ package ca.uoit.crobot;
 
 import com.pi4j.io.gpio.*;
 
+import java.util.Scanner;
+
 public class Application {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         final GpioController controller = GpioFactory.getInstance();
 
-        final GpioPinPwmOutput leftPmw = controller.provisionPwmOutputPin(RaspiPin.GPIO_01, "LEFT_PMW");
-        final GpioPinDigitalOutput leftMotorDirection = controller.provisionDigitalOutputPin(RaspiPin.GPIO_04, "LEFT_DIR");
+        final Scanner scanner = new Scanner(System.in);
 
-        final GpioPinPwmOutput rightPmw = controller.provisionPwmOutputPin(RaspiPin.GPIO_26, "RIGHT_PMW");
-        final GpioPinDigitalOutput rightMotorDirection = controller.provisionDigitalOutputPin(RaspiPin.GPIO_27, "RIGHT_DIR");
+        while (true) {
+            System.out.println("Enter pin address: ");
+            final int address = scanner.nextInt();
+            System.out.println("Enter true to set state to HIGH");
+            final boolean high = scanner.nextLine().trim().toLowerCase().equals("true");
 
-        leftPmw.setShutdownOptions(true, PinState.LOW);
-        rightPmw.setShutdownOptions(true, PinState.LOW);
+            final Pin pin = RaspiPin.getPinByAddress(address);
+            final GpioPinDigitalOutput device = controller.provisionDigitalOutputPin(pin);
 
-        leftMotorDirection.setShutdownOptions(true, PinState.LOW);
-        rightMotorDirection.setShutdownOptions(true, PinState.LOW);
+            if (high) {
+                device.setState(PinState.HIGH);
+            } else {
+                device.setState(PinState.LOW);
+            }
 
+            System.out.println("Pin: " + address + " name: " + pin.getName() + " high=" + high);
 
-        System.out.println("Test run for 10 seconds.");
-
-        leftPmw.setPwm(1024);
-        rightPmw.setPwm(1024);
-
-        Thread.sleep(10000);
-
-        controller.shutdown();
+            device.setShutdownOptions(true, PinState.LOW);
+        }
     }
 }
