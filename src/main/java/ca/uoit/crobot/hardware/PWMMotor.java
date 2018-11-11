@@ -2,6 +2,9 @@ package ca.uoit.crobot.hardware;
 
 import com.pi4j.io.gpio.*;
 
+import static ca.uoit.crobot.hardware.GpioUility.getDigitalOutput;
+import static ca.uoit.crobot.hardware.GpioUility.getPwmOutput;
+
 public class PWMMotor implements Motor {
 
     private final int enablePinAddress;
@@ -82,29 +85,5 @@ public class PWMMotor implements Motor {
 
         pinBDigital = getDigitalOutput(inputBAddress);
         pinBDigital.setShutdownOptions(true, PinState.LOW);
-    }
-
-    private GpioPinDigitalOutput getDigitalOutput(final int address) {
-        for (final Pin pin : RaspiPin.allPins()) {
-            if (pin.getAddress() == address) {
-                return GpioFactory.getInstance().provisionDigitalOutputPin(pin);
-            }
-        }
-
-        throw new IllegalArgumentException("Pin at address=" + address + " not found");
-    }
-
-    private GpioPinPwmOutput getPwmOutput(final int address) {
-        for (final Pin pin : RaspiPin.allPins()) {
-            if (pin.getAddress() == address) {
-                if (pin.getSupportedPinModes().contains(PinMode.PWM_OUTPUT)) {
-                    return GpioFactory.getInstance().provisionPwmOutputPin(pin);
-                } else {
-                    return GpioFactory.getInstance().provisionSoftPwmOutputPin(pin);
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Pin at address=" + address + " not found");
     }
 }
