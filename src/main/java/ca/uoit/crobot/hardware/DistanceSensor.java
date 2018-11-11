@@ -1,6 +1,6 @@
 package ca.uoit.crobot.hardware;
 
-public interface DistanceSensor {
+public interface DistanceSensor extends Device {
 
     /**
      * Takes a distance measurement
@@ -8,10 +8,5 @@ public interface DistanceSensor {
      * @return The distance in CM
      */
     int measure();
-
-    /**
-     * Initialize the device
-     */
-    void init();
 
 }

@@ -1,6 +1,6 @@
 package ca.uoit.crobot.hardware;
 
-public interface Motor {
+public interface Motor extends Device {
 
     /**
      * Set the speed of the device, as a percent.
@@ -20,10 +20,5 @@ public interface Motor {
      * Stops the motor from turning
      */
     void stop();
-
-    /**
-     * Perform initial setup of the device
-     */
-    void init();
 
 }
