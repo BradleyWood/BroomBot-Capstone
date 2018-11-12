@@ -4,8 +4,8 @@ import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 
-import static ca.uoit.crobot.hardware.GpioUility.getDigitalInput;
-import static ca.uoit.crobot.hardware.GpioUility.getDigitalOutput;
+import static ca.uoit.crobot.hardware.GpioUtility.getDigitalInput;
+import static ca.uoit.crobot.hardware.GpioUtility.getDigitalOutput;
 
 public class UltrasonicSensor implements DistanceSensor {
 

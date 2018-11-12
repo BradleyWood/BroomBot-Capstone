@@ -2,7 +2,7 @@ package ca.uoit.crobot.hardware;
 
 import com.pi4j.io.gpio.*;
 
-public class GpioUility {
+public class GpioUtility {
 
     static GpioPinDigitalInput getDigitalInput(final int address) {
         final Pin pin = RaspiPin.getPinByAddress(address);

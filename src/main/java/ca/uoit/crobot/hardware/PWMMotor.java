@@ -2,8 +2,8 @@ package ca.uoit.crobot.hardware;
 
 import com.pi4j.io.gpio.*;
 
-import static ca.uoit.crobot.hardware.GpioUility.getDigitalOutput;
-import static ca.uoit.crobot.hardware.GpioUility.getPwmOutput;
+import static ca.uoit.crobot.hardware.GpioUtility.getDigitalOutput;
+import static ca.uoit.crobot.hardware.GpioUtility.getPwmOutput;
 
 public class PWMMotor implements Motor {
 
