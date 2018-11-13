@@ -1,0 +1,12 @@
+{
+  "leftMotor": {
+    "enablePinAddress": -1,
+    "inputAAddress": 21,
+    "inputBAddress": 26
+  },
+  "rightMotor": {
+    "enablePinAddress": -1,
+    "inputAAddress": 22,
+    "inputBAddress": 30
+  }
+}
