@@ -1,53 +1,23 @@
 package ca.uoit.crobot;
 
-import com.pi4j.io.gpio.*;
 
-import java.util.Scanner;
+import ca.uoit.crobot.hardware.Motor;
+import ca.uoit.crobot.hardware.shield.AdafruitDCMotor;
+import ca.uoit.crobot.rc.RemoteControl;
+
+import java.io.IOException;
 
 public class Application {
 
-    public static void main(String[] args) {
-        final GpioController controller = GpioFactory.getInstance();
+    public static void main(String[] args) throws IOException {
+        final Motor motorA = AdafruitDCMotor.MOTOR1;
+        final Motor motorB = AdafruitDCMotor.MOTOR2;
 
-        final Scanner scanner = new Scanner(System.in);
+        motorA.init();
+        motorB.init();
 
-        final Pin[] pins = RaspiPin.allPins();
-        final GpioPinDigitalOutput[] devices = new GpioPinDigitalOutput[pins.length];
+        System.out.println("Initialized and Read to go!");
 
-        System.out.println("Found " + pins.length + " pins.");
-
-        while (true) {
-            System.out.println("Enter pin address: ");
-            final int address = Integer.parseInt(scanner.nextLine());
-            System.out.println("Enter true to set state to HIGH");
-            final boolean high = scanner.nextLine().trim().toLowerCase().equals("true");
-
-            GpioPinDigitalOutput device = null;
-
-            for (int i = 0; i < pins.length; i++) {
-                if (pins[i].getAddress() == address) {
-                    if (devices[i] == null) {
-                        devices[i] = controller.provisionDigitalOutputPin(pins[i]);
-                    }
-                    device = devices[i];
-                    break;
-                }
-            }
-
-            if (device == null) {
-                System.out.println("Device not found");
-                break;
-            }
-
-            if (high) {
-                device.setState(PinState.HIGH);
-            } else {
-                device.setState(PinState.LOW);
-            }
-
-            System.out.println("Pin: " + address + " name: " + device.getPin().getName() + " high=" + high);
-
-            device.setShutdownOptions(true, PinState.LOW);
-        }
+        new RemoteControl(80, motorA, motorB);
     }
 }
