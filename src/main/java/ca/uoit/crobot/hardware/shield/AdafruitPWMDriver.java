@@ -70,10 +70,8 @@ public class AdafruitPWMDriver {
         } catch (InterruptedException ignored) {
         }
 
-        System.out.println(29);
         byte mode1 = (byte) (device.read(MODE1) & ~SLEEP);
         device.write(mode1);
-        System.out.println(30);
 
         try {
             Thread.sleep(200);
@@ -96,8 +94,6 @@ public class AdafruitPWMDriver {
     public static void setPwmFreq(final int freq) throws IOException, I2CFactory.UnsupportedBusNumberException {
         final I2CDevice device = getDefaultDevice();
 
-        System.out.println(99);
-
         float prescaleValue = 25000000.0f; // 25 MHz
         prescaleValue /= 4096f;
         prescaleValue /= freq;
@@ -118,8 +114,6 @@ public class AdafruitPWMDriver {
         }
 
         device.write(MODE1, (byte) (oldMode | 0x80));
-
-        System.out.println(101);
     }
 
     public static void setPwm(final int channel, final int on, final int off) throws IOException, I2CFactory.UnsupportedBusNumberException {
