@@ -4,20 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ca.uoit.crobot</groupId>
-    <artifactId>crobot</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>crobot-core</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>crobot</name>
-    <url>http://www.uoit.ca</url>
+    <parent>
+        <groupId>ca.uoit.crobot</groupId>
+        <artifactId>crobot</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-    <description>Intelligent cleaning Robot with Spacial Mapping</description>
-
-    <scm>
-        <url>https://github.com/RLiscanoUOIT/capstone-project-group-09</url>
-        <connection>https://github.com/RLiscanoUOIT/capstone-project-group-09.git</connection>
-    </scm>
+    <name>crobot-core</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,16 +33,27 @@
         </repository>
     </repositories>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.11</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-core</artifactId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nanohttpd</groupId>
+            <artifactId>nanohttpd</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <finalName>crobot</finalName>
@@ -82,10 +89,30 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>ca.uoit.crobot.Application</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
-
-    <modules>
-        <module>crobot-core</module>
-    </modules>
-
 </project>
