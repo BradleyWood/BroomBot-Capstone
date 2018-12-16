@@ -13,6 +13,8 @@ public enum AdafruitDCMotor implements Motor {
     final int inputA;
     final int inputB;
 
+    private int speed = 0;
+
     AdafruitDCMotor(final int pwnPin, final int inputA, final int inputB) {
         this.pwnPin = pwnPin;
         this.inputA = inputA;
@@ -39,6 +41,7 @@ public enum AdafruitDCMotor implements Motor {
             int nv = (int)((Math.abs(speed) / 100f) * 255f + 0.5f);
 
             AdafruitPWMDriver.setPwm(pwnPin, 0, nv * 16);
+            this.speed = speed;
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
@@ -47,7 +50,7 @@ public enum AdafruitDCMotor implements Motor {
 
     @Override
     public int getSpeed() {
-        return 0;
+        return speed;
     }
 
     @Override
