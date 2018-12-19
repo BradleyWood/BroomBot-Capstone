@@ -4,7 +4,7 @@ import com.pi4j.io.gpio.*;
 
 public class GpioUtility {
 
-    static GpioPinDigitalInput getDigitalInput(final int address) {
+    public static GpioPinDigitalInput getDigitalInput(final int address) {
         final Pin pin = RaspiPin.getPinByAddress(address);
 
         if (pin != null)
@@ -13,7 +13,7 @@ public class GpioUtility {
         throw new IllegalArgumentException("Pin at address=" + address + " not found");
     }
 
-    static GpioPinDigitalOutput getDigitalOutput(final int address) {
+    public static GpioPinDigitalOutput getDigitalOutput(final int address) {
         final Pin pin = RaspiPin.getPinByAddress(address);
 
         if (pin != null)
@@ -22,7 +22,7 @@ public class GpioUtility {
         throw new IllegalArgumentException("Pin at address=" + address + " not found");
     }
 
-    static GpioPinPwmOutput getPwmOutput(final int address) {
+    public static GpioPinPwmOutput getPwmOutput(final int address) {
         for (final Pin pin : RaspiPin.allPins()) {
             if (pin.getAddress() == address) {
                 if (pin.getSupportedPinModes().contains(PinMode.PWM_OUTPUT)) {

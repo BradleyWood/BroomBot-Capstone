@@ -1,6 +1,4 @@
-package ca.uoit.crobot.hardware.shield;
-
-import ca.uoit.crobot.hardware.Motor;
+package ca.uoit.crobot.hardware;
 
 public enum AdafruitDCMotor implements Motor {
 
