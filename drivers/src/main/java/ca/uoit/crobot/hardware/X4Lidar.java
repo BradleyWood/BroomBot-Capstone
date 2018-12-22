@@ -7,7 +7,7 @@ import com.sun.jna.*;
 
 public class X4Lidar implements Lidar {
 
-    private static final int MOTOR_CTRL_PIN = 27;
+    private static final int MOTOR_CTRL_PIN = 7;
     private static final int BAUD_RATE = 230400;
 
     private GpioPinDigitalOutput motorCtrl;
