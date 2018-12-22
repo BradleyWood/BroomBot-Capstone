@@ -39,6 +39,21 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.nanohttpd</groupId>
+                <artifactId>nanohttpd</artifactId>
+                <version>2.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>5.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pi4j</groupId>
+                <artifactId>pi4j-core</artifactId>
+                <version>1.2-SNAPSHOT</version>
+            </dependency>
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.11</version>
@@ -86,6 +101,8 @@
     <modules>
         <module>crobot-core</module>
         <module>drivers</module>
+        <module>simulator</module>
+        <module>crobot-app</module>
     </modules>
 
 </project>
