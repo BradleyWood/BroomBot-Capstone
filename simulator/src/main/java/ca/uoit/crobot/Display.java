@@ -27,6 +27,7 @@ public class Display extends JPanel {
 
         g2d.setColor(backgroundColor);
         g2d.fillRect(0, 0, getWidth(), getHeight());
+        g2d.setStroke(new BasicStroke(5));
 
         final float transformationScaleX = getWidth() / width;
         final float transformationScaleY = getWidth() / height;
@@ -35,6 +36,7 @@ public class Display extends JPanel {
             g2d.setColor(object.getColor());
 
             final AffineTransform af = new AffineTransform();
+            af.translate(object.getPosition().getX() / width * getWidth(), object.getPosition().getY() / height * getHeight());
             af.scale(transformationScaleX, transformationScaleY);
 
             g2d.transform(af);
