@@ -13,8 +13,8 @@ public class GameObject {
     private final @Getter Polygon body;
     private final @Getter Color color;
 
-    private @Getter Vector2f position = new Vector2f();
-    private @Getter Vector2f velocity = new Vector2f();
+    private final @Getter Vector2f position = new Vector2f();
+    private @Getter @Setter float speed;
     private @Getter @Setter float angularVelocity;
     private @Getter @Setter float yaw;
 
@@ -23,7 +23,11 @@ public class GameObject {
      */
     public void update() {
         yaw += angularVelocity;
-        position.setX(position.getX() + velocity.getX());
-        position.setY(position.getX() + velocity.getY());
+
+        yaw %= 2 * Math.PI;
+
+        position.setX(position.getX() + speed * (float) Math.sin(yaw));
+        position.setY(position.getY() + speed * (float) Math.cos(yaw));
+
     }
 }
