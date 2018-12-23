@@ -1,12 +1,14 @@
 package ca.uoit.crobot.model;
 
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.awt.*;
 
+@EqualsAndHashCode
 @RequiredArgsConstructor
 public class GameObject {
 
@@ -28,6 +30,5 @@ public class GameObject {
 
         position.setX(position.getX() + speed * (float) Math.sin(yaw));
         position.setY(position.getY() + speed * (float) Math.cos(yaw));
-
     }
 }
