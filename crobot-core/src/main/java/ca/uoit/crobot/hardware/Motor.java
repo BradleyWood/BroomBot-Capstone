@@ -21,4 +21,12 @@ public interface Motor extends Device {
      */
     void stop();
 
+    /**
+     * Returns the number of pulses from the motor's hall effect
+     * sensor
+     *
+     * @return number of pulses
+     */
+    int getCount();
+
 }
