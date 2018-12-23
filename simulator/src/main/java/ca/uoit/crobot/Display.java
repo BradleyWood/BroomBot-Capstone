@@ -25,6 +25,12 @@ public class Display extends JPanel {
     protected void paintComponent(final Graphics g) {
         final Graphics2D g2d = (Graphics2D) g;
 
+        final RenderingHints rh = new RenderingHints(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        g2d.setRenderingHints(rh);
+
         g2d.setColor(backgroundColor);
         g2d.fillRect(0, 0, getWidth(), getHeight());
         g2d.setStroke(new BasicStroke(5));
@@ -35,14 +41,17 @@ public class Display extends JPanel {
         for (final GameObject object : objects) {
             g2d.setColor(object.getColor());
 
+            final Polygon body = object.getBody();
+            final Rectangle bounds = body.getBounds();
+
             final AffineTransform af = new AffineTransform();
             af.translate(object.getPosition().getX() / width * getWidth(), object.getPosition().getY() / height * getHeight());
             af.scale(transformationScaleX, transformationScaleY);
 
+            af.rotate(-object.getYaw(), bounds.getCenterX(), bounds.getCenterY());
+
             g2d.transform(af);
             g2d.drawPolygon(object.getBody());
         }
-
-        System.out.println(getWidth() + " " + getHeight());
     }
 }
