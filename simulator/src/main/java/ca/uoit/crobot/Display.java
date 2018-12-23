@@ -35,8 +35,8 @@ public class Display extends JPanel {
         g2d.fillRect(0, 0, getWidth(), getHeight());
         g2d.setStroke(new BasicStroke(5));
 
-        final float transformationScaleX = getWidth() / width;
-        final float transformationScaleY = getWidth() / height;
+        final float transformationScaleX = Math.min(getWidth(), getHeight()) / width;
+        final float transformationScaleY = Math.min(getWidth(), getHeight()) / height;
 
         for (final GameObject object : objects) {
             g2d.setColor(object.getColor());
