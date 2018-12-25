@@ -35,8 +35,9 @@ public class Display extends JPanel {
         g2d.fillRect(0, 0, getWidth(), getHeight());
         g2d.setStroke(new BasicStroke(5));
 
-        final float transformationScaleX = Math.min(getWidth(), getHeight()) / width;
-        final float transformationScaleY = Math.min(getWidth(), getHeight()) / height;
+        final int size = Math.min(getWidth(), getHeight());
+        final float transformationScaleX = size / width;
+        final float transformationScaleY = size / height;
 
         for (final GameObject object : objects) {
             g2d.setColor(object.getColor());
@@ -45,10 +46,10 @@ public class Display extends JPanel {
             final Rectangle bounds = body.getBounds();
 
             final AffineTransform af = new AffineTransform();
-            af.translate(object.getPosition().getX() / width * getWidth(), object.getPosition().getY() / height * getHeight());
-            af.scale(transformationScaleX, transformationScaleY);
 
+            af.translate(object.getPosition().getX() / width * size / transformationScaleX, object.getPosition().getY() / height * size / transformationScaleY);
             af.rotate(-object.getYaw(), bounds.getCenterX(), bounds.getCenterY());
+            af.scale(transformationScaleX, transformationScaleY);
 
             g2d.transform(af);
             g2d.drawPolygon(object.getBody());
