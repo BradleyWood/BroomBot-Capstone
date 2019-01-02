@@ -1,9 +1,10 @@
 package ca.uoit.crobot.hardware;
 
+import ca.uoit.crobot.SimulationEntity;
 import ca.uoit.crobot.model.GameObject;
 import lombok.Data;
 
-public @Data class SimulatedMotor implements Motor {
+public @Data class SimulatedMotor implements Motor, SimulationEntity {
 
     private final GameObject robot;
     private SimulatedMotor otherMotor;
@@ -15,7 +16,6 @@ public @Data class SimulatedMotor implements Motor {
     public void setSpeed(final int speed) {
         this.speed = speed;
 
-
         if (otherMotor != null) {
             final int otherSpeed = otherMotor.getSpeed();
             final int diff = speed - otherSpeed;
@@ -26,6 +26,11 @@ public @Data class SimulatedMotor implements Motor {
             throw new NullPointerException("Cannot calculate simulated velocity without reference to" +
                     " both robot motors.");
         }
+    }
+
+    @Override
+    public void update() {
+        counter += Math.abs(speed);
     }
 
     @Override

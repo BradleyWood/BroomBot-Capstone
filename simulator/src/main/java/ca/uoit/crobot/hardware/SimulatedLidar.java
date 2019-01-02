@@ -1,5 +1,6 @@
 package ca.uoit.crobot.hardware;
 
+import ca.uoit.crobot.SimulationEntity;
 import ca.uoit.crobot.model.GameObject;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public @Data class SimulatedLidar implements Lidar {
+public @Data class SimulatedLidar implements Lidar, SimulationEntity {
 
     private final List<GameObject> objects;
     private final GameObject robot;
@@ -80,6 +81,11 @@ public @Data class SimulatedLidar implements Lidar {
         }
 
         return new LidarScan(angles, ranges);
+    }
+
+    @Override
+    public void update() {
+
     }
 
     private Point2D getClosestIntersection(final Polygon obj, final Point2D a, final Point2D b) {

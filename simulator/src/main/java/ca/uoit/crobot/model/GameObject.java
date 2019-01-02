@@ -1,6 +1,7 @@
 package ca.uoit.crobot.model;
 
 
+import ca.uoit.crobot.SimulationEntity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import java.awt.*;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class GameObject {
+public class GameObject implements SimulationEntity {
 
     private final @Getter Polygon body;
     private final @Getter Color color;
@@ -23,6 +24,7 @@ public class GameObject {
     /**
      * Update object position and angle
      */
+    @Override
     public void update() {
         yaw += angularVelocity;
 
