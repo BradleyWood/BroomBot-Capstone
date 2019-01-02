@@ -3,8 +3,10 @@ package ca.uoit.crobot.hardware;
 import ca.uoit.crobot.SimulationEntity;
 import ca.uoit.crobot.model.GameObject;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public @Data class SimulatedMotor implements Motor, SimulationEntity {
+@EqualsAndHashCode(callSuper = true)
+public @Data class SimulatedMotor extends Motor implements SimulationEntity {
 
     private final GameObject robot;
     private SimulatedMotor otherMotor;
@@ -31,6 +33,7 @@ public @Data class SimulatedMotor implements Motor, SimulationEntity {
     @Override
     public void update() {
         counter += Math.abs(speed);
+        listeners.forEach(l -> l.onMove(counter));
     }
 
     @Override

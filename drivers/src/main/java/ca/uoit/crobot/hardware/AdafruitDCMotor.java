@@ -4,23 +4,23 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public enum AdafruitDCMotor implements Motor {
+public class AdafruitDCMotor extends Motor {
 
-    MOTOR1(8, 9, 10, 27, 24),
-    MOTOR2(13, 12, 11, 28, 29),
-    MOTOR3(2, 3, 4, -1, -1),
-    MOTOR4(7, 6, 5, -1, -1);
+    public static AdafruitDCMotor MOTOR1 = new AdafruitDCMotor(8, 9, 10, 27, 24);
+    public static AdafruitDCMotor MOTOR2 = new AdafruitDCMotor(13, 12, 11, 28, 29);
+    public static AdafruitDCMotor MOTOR3 = new AdafruitDCMotor(2, 3, 4, -1, -1);
+    public static AdafruitDCMotor MOTOR4 = new AdafruitDCMotor(7, 6, 5, -1, -1);
 
-    final int pwnPin;
-    final int inputA;
-    final int inputB;
-    final int encoderPhaseA;
-    final int encoderPhaseB;
+    private final int pwnPin;
+    private final int inputA;
+    private final int inputB;
+    private final int encoderPhaseA;
+    private final int encoderPhaseB;
 
     private final AtomicInteger counter = new AtomicInteger();
     private int speed = 0;
 
-    AdafruitDCMotor(final int pwnPin, final int inputA, final int inputB, final int encoderPhaseA, final int encoderPhaseB) {
+    private AdafruitDCMotor(final int pwnPin, final int inputA, final int inputB, final int encoderPhaseA, final int encoderPhaseB) {
         this.pwnPin = pwnPin;
         this.inputA = inputA;
         this.inputB = inputB;
@@ -76,7 +76,8 @@ public enum AdafruitDCMotor implements Motor {
 
         if (encoderPhaseA != -1) {
             GpioUtility.getDigitalInput(encoderPhaseA).addListener((GpioPinListenerDigital) event -> {
-                counter.incrementAndGet();
+                final int count = counter.incrementAndGet();
+                listeners.forEach(l -> l.onMove(count));
             });
         }
 
