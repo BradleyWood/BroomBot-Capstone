@@ -2,15 +2,9 @@
 # Cleaning Robot
 
 
+# Build Instructions
 
-# Installation
-
-```
-mvnw install
-```
-
-# Execution
 
 ```
-java -jar target/crobot-jar-with-dependencies.jar
+gradlew build
 ```
