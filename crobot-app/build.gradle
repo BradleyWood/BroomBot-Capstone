@@ -1,0 +1,37 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'ca.uoit.crobot'
+version = '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+repositories {
+     maven { url "https://oss.sonatype.org/content/groups/public" }
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "ca.uoit.crobot.Application"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+dependencies {
+    compile group: 'org.nanohttpd', name: 'nanohttpd', version:'2.2.0'
+    compile group: 'io.ultreia', name: 'bluecove', version:'2.1.1'
+
+    compile project(':drivers')
+    compile project(':crobot-core')
+
+    testCompile group: 'junit', name: 'junit', version:'4.11'
+}

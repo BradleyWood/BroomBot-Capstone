@@ -1,0 +1,26 @@
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'ca.uoit.crobot'
+version = '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    maven { url "https://oss.sonatype.org/content/groups/public" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
+    annotationProcessor "org.projectlombok:lombok:1.18.4"
+
+    compile project(':crobot-core')
+}

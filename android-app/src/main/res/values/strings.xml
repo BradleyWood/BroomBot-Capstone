@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Intelligent Cleaning Robot</string>
+    <string name="defaultIp">10.0.0.208</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="choose_a_device">Choose a device</string>
+    <string name="discovery_failed">Could not search for devices</string>
+</resources>
