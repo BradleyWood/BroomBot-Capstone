@@ -15,18 +15,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import ca.uoit.crobot.event.ConnectionListener;
+import ca.uoit.crobot.messages.DriveCommand;
+
 public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFragmentInteractionListener,
-        DeviceSelectionFragment.OnDeviceSelectionInteractionListener {
+        DeviceSelectionFragment.OnDeviceSelectionInteractionListener, ConnectionListener {
 
     private static final String ROBOT_UUID = "396badb4-1837-11e9-ab14-d663bd873d93";
 
     private final List<BluetoothDevice> deviceList = Collections.synchronizedList(new LinkedList<>());
     private DeviceSelectionFragment deviceSelectionFragment;
+    private String deviceAddress;
     private Connection connection;
 
     @Override
@@ -55,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 
         final IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
 
         registerReceiver(receiver, filter);
 
@@ -89,8 +93,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
                             deviceList.add(device);
                             deviceSelectionFragment.addDevice(name, address);
 
-                            if (connection != null && connection.isConnected() &&
-                                    connection.getDeviceAddress().equals(address)) {
+                            if (connection != null && connection.isRunning() && address.equals(deviceAddress)) {
                                 deviceSelectionFragment.setConnected(address);
                             }
                             break;
@@ -99,12 +102,6 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(intent.getAction())) {
                 deviceSelectionFragment.setRefreshing(false);
-            } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(intent.getAction())) {
-                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                deviceSelectionFragment.setDisconnected();
-                Log.i("gg", "disconnect: " + device.getName() + " : " + device.getAddress());
-
-                Toast.makeText(MainActivity.this, "Disconnected", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -123,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     }
 
     @Override
-    public synchronized boolean onConnect(final String address) {
+    public synchronized boolean onPressConnect(final String address) {
         for (final BluetoothDevice device : deviceList) {
             if (address.equals(device.getAddress())) {
                 try {
@@ -134,7 +131,11 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
                     }
 
                     socket.connect();
-                    connection = new Connection(device, socket);
+                    connection = new Connection(socket, socket.getInputStream(), socket.getOutputStream());
+                    connection.addConnectionListener(this);
+                    deviceAddress = address;
+
+                    new Thread(connection).start();
 
                     return true;
                 } catch (Exception e) {
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     }
 
     @Override
-    public synchronized void onDisconnect() {
+    public synchronized void onPressDisconnect() {
         if (connection != null) {
             try {
                 connection.close();
@@ -183,6 +184,26 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
             rightMotor = strength;
         }
 
-        // todo
+        if (connection != null) {
+            try {
+                connection.send(new DriveCommand(leftMotor, rightMotor));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void connected(final Connection connection) {
+
+    }
+
+    @Override
+    public void disconnected(final Connection connection) {
+        runOnUiThread(() -> {
+            deviceSelectionFragment.setDisconnected();
+            Toast.makeText(this, ca.uoit.crobot.R.string.disconnected, Toast.LENGTH_SHORT).show();
+            deviceAddress = null;
+        });
     }
 }

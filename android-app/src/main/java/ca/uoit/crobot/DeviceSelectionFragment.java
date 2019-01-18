@@ -1,7 +1,6 @@
 package ca.uoit.crobot;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -86,7 +85,7 @@ public class DeviceSelectionFragment extends Fragment {
         listView.setOnItemClickListener((parent, itemView, position, id) -> {
             if (itemView instanceof TextView) {
                 if (position == da.getSelected()) {
-                    mListener.onDisconnect();
+                    mListener.onPressDisconnect();
                     da.setSelected(-1);
                     return;
                 }
@@ -96,7 +95,7 @@ public class DeviceSelectionFragment extends Fragment {
                     da.setConnecting(true);
 
                     new Thread(() -> {
-                        final boolean success = mListener.onConnect(da.getAddress(position));
+                        final boolean success = mListener.onPressConnect(da.getAddress(position));
 
                         getActivity().runOnUiThread(() -> {
                             da.setConnecting(false);
@@ -133,8 +132,8 @@ public class DeviceSelectionFragment extends Fragment {
 
         void onRefresh();
 
-        boolean onConnect(String address);
+        boolean onPressConnect(String address);
 
-        void onDisconnect();
+        void onPressDisconnect();
     }
 }
