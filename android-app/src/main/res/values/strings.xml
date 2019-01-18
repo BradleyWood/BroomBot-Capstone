@@ -7,4 +7,6 @@
     <string name="choose_a_device">Choose a device</string>
     <string name="discovery_failed">Could not search for devices</string>
     <string name="disconnected">Disconnected</string>
+    <string name="devices">Devices</string>
+    <string name="rc">RC</string>
 </resources>

@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
         deviceSelectionFragment = DeviceSelectionFragment.newInstance();
         RCFragment rcFragment = RCFragment.newInstance();
 
-        tpa.addTab("Devices", deviceSelectionFragment);
-        tpa.addTab("RC", rcFragment);
+        tpa.addTab(getString(ca.uoit.crobot.R.string.devices), deviceSelectionFragment);
+        tpa.addTab(getString(ca.uoit.crobot.R.string.rc), rcFragment);
 
         viewPager.setAdapter(tpa);
 
