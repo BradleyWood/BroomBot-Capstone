@@ -1,5 +1,7 @@
 package ca.uoit.crobot.rc;
 
+import java.io.IOException;
+
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.UUID;
@@ -18,6 +20,9 @@ public class BluetoothServer implements Runnable {
     private ConnectionListener connectionListener;
     private MessageListener messageListener;
 
+    private StreamConnectionNotifier notifier;
+    private boolean running = false;
+
     public void setMessageListener(final MessageListener messageListener) {
         this.messageListener = messageListener;
     }
@@ -26,10 +31,26 @@ public class BluetoothServer implements Runnable {
         this.connectionListener = connectionListener;
     }
 
+    public void start() {
+        if (notifier != null) {
+            throw new IllegalStateException("Server is already running");
+        } else {
+            new Thread(this).start();
+        }
+    }
+
+    public void stop() {
+        if (notifier != null) {
+            try {
+                running = false;
+                notifier.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+
     @Override
     public void run() {
-        StreamConnectionNotifier notifier;
-
         try {
             final LocalDevice local = LocalDevice.getLocalDevice();
             local.setDiscoverable(DiscoveryAgent.GIAC);
@@ -45,7 +66,7 @@ public class BluetoothServer implements Runnable {
             return;
         }
 
-        while (true) {
+        while (running) {
             try {
                 final StreamConnection sc = notifier.acceptAndOpen();
 
@@ -63,7 +84,7 @@ public class BluetoothServer implements Runnable {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return;
+                running = false;
             }
         }
     }
