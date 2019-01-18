@@ -18,6 +18,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'de.ruedigermoeller:fst:2.56'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
     annotationProcessor "org.projectlombok:lombok:1.18.4"
 }
