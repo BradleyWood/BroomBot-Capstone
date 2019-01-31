@@ -20,5 +20,8 @@ public class FakeMotor extends Motor {
     public int getCount() { return 0; }
 
     @Override
+    public void zero() {}
+
+    @Override
     public void init() {}
 }

@@ -11,10 +11,10 @@ import java.util.Queue;
 public class Drive extends Thread {
 
     // Constant for converting inches and encoder counts
-    private static final double ENCODER_COUNTS_PER_INCH = 400 / (Math.PI * 2.5);
+    private static final double ENCODER_COUNTS_PER_INCH = 93;
 
     // Constant for converting degrees and encoder counts
-    private static final double ENCODER_COUNTS_PER_DEGREE = 20;
+    private static final double ENCODER_COUNTS_PER_DEGREE = 8.2;
 
     // A queue of commands to execute
     private final Queue<Command> commandQueue = new LinkedList<>();
@@ -204,15 +204,15 @@ public class Drive extends Thread {
                     break;
                 case TURN_LEFT:
                     // Turn left at the given speed
-                    leftMotor.setSpeed(-currentCommand.speed);
-                    rightMotor.setSpeed(currentCommand.speed);
+                    leftMotor.setSpeed(currentCommand.speed);
+                    rightMotor.setSpeed(-currentCommand.speed);
                     System.out.println("Turning Left " + currentCommand.distance + " encoder counts");
 
                     break;
                 case TURN_RIGHT:
                     // Turn right at the given speed
-                    leftMotor.setSpeed(currentCommand.speed);
-                    rightMotor.setSpeed(-currentCommand.speed);
+                    leftMotor.setSpeed(-currentCommand.speed);
+                    rightMotor.setSpeed(currentCommand.speed);
                     System.out.println("Turning right " + currentCommand.distance + " encoder counts");
 
                     break;

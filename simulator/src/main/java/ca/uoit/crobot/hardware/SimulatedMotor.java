@@ -52,6 +52,11 @@ public @Data class SimulatedMotor extends Motor implements SimulationEntity {
     }
 
     @Override
+    public void zero() {
+        counter = 0;
+    }
+
+    @Override
     public void init() {
 
     }

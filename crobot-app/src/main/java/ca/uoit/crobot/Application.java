@@ -11,6 +11,17 @@ public class Application {
 
         drive.init();
 
-        drive.driveDistance(50, 20);
+        drive.driveDistance(25, 10);
+        drive.turnLeft(25, 90);
+
+        drive.driveDistance(25, 10);
+        drive.turnLeft(25, 90);
+
+        drive.driveDistance(25, 10);
+        drive.turnLeft(25, 90);
+
+        drive.driveDistance(25, 10);
+        drive.turnLeft(25, 90);
+
     }
 }
