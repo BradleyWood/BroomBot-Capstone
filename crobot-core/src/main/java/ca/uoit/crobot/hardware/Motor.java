@@ -34,6 +34,11 @@ public abstract class Motor implements Device {
     public abstract int getCount();
 
     /**
+     * Resets the count of the encoder to zero
+     */
+    public abstract void zero();
+
+    /**
      * Add an encoder listener to set.
      *
      * @param listener The listener to add

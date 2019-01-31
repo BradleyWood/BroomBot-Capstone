@@ -71,6 +71,11 @@ public class AdafruitDCMotor extends Motor {
     }
 
     @Override
+    public void zero() {
+        counter.set(0);
+    }
+
+    @Override
     public void init() {
         stop();
 

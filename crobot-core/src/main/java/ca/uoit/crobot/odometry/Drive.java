@@ -1,6 +1,9 @@
 package ca.uoit.crobot.odometry;
 
 import ca.uoit.crobot.hardware.Motor;
+import ca.uoit.crobot.odometry.pid.FakeMotor;
+import ca.uoit.crobot.odometry.pid.PID;
+import ca.uoit.crobot.odometry.pid.PIDInput;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -8,28 +11,24 @@ import java.util.Queue;
 public class Drive extends Thread {
 
     // Constant for converting inches and encoder counts
-    private static final int ENCODER_COUNTS_PER_INCH = 360;
+    private static final double ENCODER_COUNTS_PER_INCH = 400 / (Math.PI * 2.5);
 
     // Constant for converting degrees and encoder counts
-    private static final int ENCODER_COUNTS_PER_DEGREE = 20;
+    private static final double ENCODER_COUNTS_PER_DEGREE = 20;
 
     // A queue of commands to execute
     private final Queue<Command> commandQueue = new LinkedList<>();
-
-    private double heading = 0;
-    private int lastPositionL = 0;
-    private int lastPositionR = 0;
 
     // Motor declarations
     private final Motor leftMotor;
     private final Motor rightMotor;
 
-    public int getDistanceTravelled() {
-        int distance = ((leftMotor.getCount() - lastPositionL) + rightMotor.getCount() - lastPositionR) / 2;
-        lastPositionL = leftMotor.getCount();
-        lastPositionR = rightMotor.getCount();
-        return distance;
-    }
+    // PID declarations
+    private final PID leftRatePID;
+    private final PID rightRatePID;
+    private final PID leftDistancePID;
+    private final PID rightDistancePID;
+
     public void init() {
         leftMotor.init();
         rightMotor.init();
@@ -38,6 +37,34 @@ public class Drive extends Thread {
     public Drive(Motor leftMotor, Motor rightMotor) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
+
+        leftRatePID = new PID(leftMotor, new PIDInput() {
+            @Override
+            public double getInput() {
+                return leftMotor.getSpeed();
+            }
+        }, 0.3);
+
+        rightRatePID = new PID(rightMotor, new PIDInput() {
+            @Override
+            public double getInput() {
+                return rightMotor.getSpeed();
+            }
+        }, 0.3);
+
+        leftDistancePID = new PID(new FakeMotor(), new PIDInput() {
+            @Override
+            public double getInput() {
+                return leftMotor.getCount();
+            }
+        }, 0.3);
+
+        rightDistancePID = new PID(new FakeMotor(), new PIDInput() {
+            @Override
+            public double getInput() {
+                return rightMotor.getCount();
+            }
+        }, 0.3);
     }
 
     /**
@@ -48,8 +75,11 @@ public class Drive extends Thread {
      * @param inches The distance to drive in inches. Enter negative values to reverse direction.
      */
     public void driveDistance(int speed, double inches) {
+        leftRatePID.setMaxSpeed(speed);
+        rightRatePID.setMaxSpeed(speed);
+
         // Convert the distance to encoder counts
-        int distance = (int) inches * ENCODER_COUNTS_PER_INCH;
+        int distance = (int) (inches * ENCODER_COUNTS_PER_INCH);
 
         // Create a new command and add it to the queue
         Command driveCommand = new Command(Command.CommandType.DRIVE, speed, distance, 0);
@@ -59,6 +89,19 @@ public class Drive extends Thread {
         if(!this.isAlive()) {
             this.start();
         }
+
+        leftMotor.zero();
+        rightMotor.zero();
+    }
+
+    /**
+     * Drive the robot straight at max speed for the given distance in inches. To drive backwards, enter a negative
+     * distance.
+     *
+     * @param inches The distance to drive in inches. Enter negative values to reverse direction.
+     */
+    public void driveDistance(double inches) {
+        driveDistance(100, inches);
     }
 
     /**
@@ -68,8 +111,11 @@ public class Drive extends Thread {
      * @param degrees The amount to turn in degrees.
      */
     public void turnLeft(int speed, double degrees) {
+        leftRatePID.setMaxSpeed(speed);
+        rightRatePID.setMaxSpeed(speed);
+
         // Convert the degrees to encoder counts
-        int distance = (int) degrees * ENCODER_COUNTS_PER_DEGREE;
+        int distance = (int) (degrees * ENCODER_COUNTS_PER_DEGREE);
 
         // Create a new command and add it to the queue
         Command driveCommand = new Command(Command.CommandType.TURN_LEFT, speed, distance, 0);
@@ -79,6 +125,18 @@ public class Drive extends Thread {
         if(!this.isAlive()) {
             this.start();
         }
+
+        leftMotor.zero();
+        rightMotor.zero();
+    }
+
+    /**
+     * Turn the robot to the left.
+     *
+     * @param degrees The amount to turn in degrees.
+     */
+    public void turnLeft(double degrees) {
+        turnLeft(100, degrees);
     }
 
     /**
@@ -88,8 +146,11 @@ public class Drive extends Thread {
      * @param degrees The amount to turn in degrees.
      */
     public void turnRight(int speed, double degrees) {
+        leftRatePID.setMaxSpeed(speed);
+        rightRatePID.setMaxSpeed(speed);
+
         // Convert the degrees to encoder counts
-        int distance = (int) degrees * ENCODER_COUNTS_PER_DEGREE;
+        int distance = (int) (degrees * ENCODER_COUNTS_PER_DEGREE);
 
         // Create a new command and add it to the queue
         Command driveCommand = new Command(Command.CommandType.TURN_LEFT, speed, distance, 0);
@@ -99,11 +160,24 @@ public class Drive extends Thread {
         if(!this.isAlive()) {
             this.start();
         }
+
+        leftMotor.zero();
+        rightMotor.zero();
+    }
+
+    /**
+     * Turn the robot to the right.
+     *
+     * @param degrees The amount to turn in degrees.
+     */
+    public void turnRight(double degrees) {
+        turnRight(100, degrees);
     }
 
     public void run() {
         // Run until the command queue is empty
         while(!commandQueue.isEmpty()) {
+
             // Get the current command
             Command currentCommand = commandQueue.poll();
 
@@ -112,6 +186,7 @@ public class Drive extends Thread {
             int rightStartPos = rightMotor.getCount();
 
             switch (currentCommand.commandType) {
+
                 case DRIVE:
                     if (currentCommand.distance < 0) {
                         // Drive backwards at the given speed
@@ -147,7 +222,7 @@ public class Drive extends Thread {
             while (Math.abs(leftMotor.getCount() - leftStartPos) < Math.abs(currentCommand.distance)
                     && Math.abs(rightMotor.getCount() - rightStartPos) < Math.abs(currentCommand.distance)) {
 
-                System.out.println("Waiting for robot to travel to destination");
+                System.out.println("Waiting for robot to travel to destination. Left encoder: " + leftMotor.getCount() + " Right encoder: " + rightMotor.getCount());
 
                 try {
                     Thread.sleep(10);
