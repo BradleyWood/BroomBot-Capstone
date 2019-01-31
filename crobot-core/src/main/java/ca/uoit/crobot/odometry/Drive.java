@@ -1,5 +1,6 @@
 package ca.uoit.crobot.odometry;
 
+import ca.uoit.crobot.hardware.EncoderListener;
 import ca.uoit.crobot.hardware.Motor;
 import ca.uoit.crobot.odometry.pid.FakeMotor;
 import ca.uoit.crobot.odometry.pid.PID;
@@ -29,6 +30,9 @@ public class Drive extends Thread {
     private final PID leftDistancePID;
     private final PID rightDistancePID;
 
+    private final Speedometer leftSpeedometer;
+    private final Speedometer rightSpeedometer;
+
     public void init() {
         leftMotor.init();
         rightMotor.init();
@@ -38,33 +42,36 @@ public class Drive extends Thread {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
 
+        leftSpeedometer = new Speedometer(this.leftMotor);
+        rightSpeedometer = new Speedometer(this.rightMotor);
+
         leftRatePID = new PID(leftMotor, new PIDInput() {
             @Override
             public double getInput() {
-                return leftMotor.getSpeed();
+                return leftSpeedometer.getSpeed();
             }
-        }, 0.3);
+        }, 1);
 
         rightRatePID = new PID(rightMotor, new PIDInput() {
             @Override
             public double getInput() {
-                return rightMotor.getSpeed();
+                return rightSpeedometer.getSpeed();
             }
-        }, 0.3);
+        }, 1);
 
         leftDistancePID = new PID(new FakeMotor(), new PIDInput() {
             @Override
             public double getInput() {
                 return leftMotor.getCount();
             }
-        }, 0.3);
+        }, 0.1);
 
         rightDistancePID = new PID(new FakeMotor(), new PIDInput() {
             @Override
             public double getInput() {
                 return rightMotor.getCount();
             }
-        }, 0.3);
+        }, 0.1);
     }
 
     /**
@@ -89,9 +96,6 @@ public class Drive extends Thread {
         if(!this.isAlive()) {
             this.start();
         }
-
-        leftMotor.zero();
-        rightMotor.zero();
     }
 
     /**
@@ -125,9 +129,6 @@ public class Drive extends Thread {
         if(!this.isAlive()) {
             this.start();
         }
-
-        leftMotor.zero();
-        rightMotor.zero();
     }
 
     /**
@@ -160,9 +161,6 @@ public class Drive extends Thread {
         if(!this.isAlive()) {
             this.start();
         }
-
-        leftMotor.zero();
-        rightMotor.zero();
     }
 
     /**
@@ -177,6 +175,9 @@ public class Drive extends Thread {
     public void run() {
         // Run until the command queue is empty
         while(!commandQueue.isEmpty()) {
+
+            leftMotor.zero();
+            rightMotor.zero();
 
             // Get the current command
             Command currentCommand = commandQueue.poll();
@@ -221,17 +222,22 @@ public class Drive extends Thread {
             // Don't move to the next command until the encoder counts reach the given distance
             while (Math.abs(leftMotor.getCount() - leftStartPos) < Math.abs(currentCommand.distance)
                     && Math.abs(rightMotor.getCount() - rightStartPos) < Math.abs(currentCommand.distance)) {
-
-                System.out.println("Waiting for robot to travel to destination. Left encoder: " + leftMotor.getCount() + " Right encoder: " + rightMotor.getCount());
+                System.out.println("Waiting for robot to travel to destination. Left encoder: " + (leftMotor.getCount() - leftStartPos) + " Right encoder: " + (rightMotor.getCount() - rightStartPos));
 
                 try {
                     Thread.sleep(10);
                 } catch(InterruptedException e) {}
             }
-
-            // Stop the motors
-            leftMotor.stop();
-            rightMotor.stop();
         }
+
+        // Stop the motors
+        leftMotor.stop();
+        rightMotor.stop();
+
+        leftRatePID.stopPID();
+        rightRatePID.stopPID();
+
+        leftDistancePID.stopPID();
+        rightDistancePID.stopPID();
     }
 }

@@ -8,7 +8,7 @@ public class PID extends Thread {
     private final PIDInput pidInput;
     private double P;
 
-    private boolean running = false;
+    private volatile boolean running = false;
 
     private double setpoint = 0;
     private double error = 0;
@@ -24,7 +24,7 @@ public class PID extends Thread {
     public void setSetpoint(double setpoint) {
         this.setpoint = setpoint;
 
-        if(!this.isAlive()) {
+        if(!running) {
             this.start();
             running = true;
         }
@@ -37,7 +37,11 @@ public class PID extends Thread {
             speed = (int) (P * error + 0.5);
 
             if(Math.abs(speed) > maxSpeed) {
-                motor.setSpeed(maxSpeed);
+                if(speed < 0) {
+                    motor.setSpeed(-maxSpeed);
+                } else {
+                    motor.setSpeed(maxSpeed);
+                }
             } else {
                 motor.setSpeed(speed);
             }
@@ -45,6 +49,8 @@ public class PID extends Thread {
             try { Thread.sleep(10); }
             catch (InterruptedException e) {}
         }
+
+        motor.stop();
     }
 
     public void setMaxSpeed(int maxSpeed) {

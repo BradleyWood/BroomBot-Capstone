@@ -1,7 +1,7 @@
 package ca.uoit.crobot.odometry.pid;
 
-public abstract class PIDInput {
+public interface PIDInput {
 
-    public abstract double getInput();
+    double getInput();
 
 }
