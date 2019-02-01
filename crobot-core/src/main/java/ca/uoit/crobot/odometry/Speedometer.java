@@ -1,6 +1,5 @@
 package ca.uoit.crobot.odometry;
 
-import ca.uoit.crobot.hardware.EncoderListener;
 import ca.uoit.crobot.hardware.Motor;
 
 public class Speedometer {
@@ -18,7 +17,7 @@ public class Speedometer {
     }
 
     public double getSpeed() {
-        if(System.currentTimeMillis() - prevTime > 100) {
+        if (System.currentTimeMillis() - prevTime > 100) {
             speed = 0;
         } else {
             speed = (1000.0 / (System.currentTimeMillis() - prevTime) * (motor.getCount() - previousCount)) / MAX_ENCODER_COUNTS_PER_SECOND * 100;

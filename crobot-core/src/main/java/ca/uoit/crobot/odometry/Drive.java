@@ -1,10 +1,8 @@
 package ca.uoit.crobot.odometry;
 
-import ca.uoit.crobot.hardware.EncoderListener;
 import ca.uoit.crobot.hardware.Motor;
 import ca.uoit.crobot.odometry.pid.FakeMotor;
 import ca.uoit.crobot.odometry.pid.PID;
-import ca.uoit.crobot.odometry.pid.PIDInput;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -45,40 +43,20 @@ public class Drive extends Thread {
         leftSpeedometer = new Speedometer(this.leftMotor);
         rightSpeedometer = new Speedometer(this.rightMotor);
 
-        leftRatePID = new PID(leftMotor, new PIDInput() {
-            @Override
-            public double getInput() {
-                return leftSpeedometer.getSpeed();
-            }
-        }, 1);
+        leftRatePID = new PID(leftMotor, leftSpeedometer::getSpeed, 1);
 
-        rightRatePID = new PID(rightMotor, new PIDInput() {
-            @Override
-            public double getInput() {
-                return rightSpeedometer.getSpeed();
-            }
-        }, 1);
+        rightRatePID = new PID(rightMotor, rightSpeedometer::getSpeed, 1);
 
-        leftDistancePID = new PID(new FakeMotor(), new PIDInput() {
-            @Override
-            public double getInput() {
-                return leftMotor.getCount();
-            }
-        }, 0.1);
+        leftDistancePID = new PID(new FakeMotor(), leftMotor::getCount, 0.1);
 
-        rightDistancePID = new PID(new FakeMotor(), new PIDInput() {
-            @Override
-            public double getInput() {
-                return rightMotor.getCount();
-            }
-        }, 0.1);
+        rightDistancePID = new PID(new FakeMotor(), rightMotor::getCount, 0.1);
     }
 
     /**
      * Drive the robot straight with the given speed and distance in inches. To drive backwards, enter a negative
      * distance.
      *
-     * @param speed The speed to drive the robot.
+     * @param speed  The speed to drive the robot.
      * @param inches The distance to drive in inches. Enter negative values to reverse direction.
      */
     public void driveDistance(int speed, double inches) {
@@ -89,11 +67,11 @@ public class Drive extends Thread {
         int distance = (int) (inches * ENCODER_COUNTS_PER_INCH);
 
         // Create a new command and add it to the queue
-        Command driveCommand = new Command(Command.CommandType.DRIVE, speed, distance, 0);
+        Command driveCommand = new Command(Command.CommandType.DRIVE, speed, distance);
         commandQueue.add(driveCommand);
 
         // If the thread is not running, start it so that the queue can be emptied.
-        if(!this.isAlive()) {
+        if (!this.isAlive()) {
             this.start();
         }
     }
@@ -111,7 +89,7 @@ public class Drive extends Thread {
     /**
      * Turn the robot to the left with the given speed.
      *
-     * @param speed The speed to drive the robot.
+     * @param speed   The speed to drive the robot.
      * @param degrees The amount to turn in degrees.
      */
     public void turnLeft(int speed, double degrees) {
@@ -122,11 +100,11 @@ public class Drive extends Thread {
         int distance = (int) (degrees * ENCODER_COUNTS_PER_DEGREE);
 
         // Create a new command and add it to the queue
-        Command driveCommand = new Command(Command.CommandType.TURN_LEFT, speed, distance, 0);
+        Command driveCommand = new Command(Command.CommandType.TURN_LEFT, speed, distance);
         commandQueue.add(driveCommand);
 
         // If the thread is not running, start it so that the queue can be emptied.
-        if(!this.isAlive()) {
+        if (!this.isAlive()) {
             this.start();
         }
     }
@@ -143,7 +121,7 @@ public class Drive extends Thread {
     /**
      * Turn the robot to the right with the given speed.
      *
-     * @param speed The speed to drive the robot.
+     * @param speed   The speed to drive the robot.
      * @param degrees The amount to turn in degrees.
      */
     public void turnRight(int speed, double degrees) {
@@ -154,11 +132,11 @@ public class Drive extends Thread {
         int distance = (int) (degrees * ENCODER_COUNTS_PER_DEGREE);
 
         // Create a new command and add it to the queue
-        Command driveCommand = new Command(Command.CommandType.TURN_LEFT, speed, distance, 0);
+        Command driveCommand = new Command(Command.CommandType.TURN_LEFT, speed, distance);
         commandQueue.add(driveCommand);
 
         // If the thread is not running, start it so that the queue can be emptied.
-        if(!this.isAlive()) {
+        if (!this.isAlive()) {
             this.start();
         }
     }
@@ -172,9 +150,10 @@ public class Drive extends Thread {
         turnRight(100, degrees);
     }
 
+    @Override
     public void run() {
         // Run until the command queue is empty
-        while(!commandQueue.isEmpty()) {
+        while (!commandQueue.isEmpty()) {
 
             leftMotor.zero();
             rightMotor.zero();
@@ -194,8 +173,7 @@ public class Drive extends Thread {
                         leftMotor.setSpeed(-currentCommand.speed);
                         rightMotor.setSpeed(-currentCommand.speed);
                         System.out.println("Driving backwards " + currentCommand.distance + " encoder counts");
-                    }
-                    else {
+                    } else {
                         // Drive forwards at the given speed
                         leftMotor.setSpeed(currentCommand.speed);
                         rightMotor.setSpeed(currentCommand.speed);
@@ -226,7 +204,8 @@ public class Drive extends Thread {
 
                 try {
                     Thread.sleep(10);
-                } catch(InterruptedException e) {}
+                } catch (InterruptedException e) {
+                }
             }
         }
 

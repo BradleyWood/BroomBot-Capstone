@@ -8,20 +8,28 @@ import ca.uoit.crobot.hardware.Motor;
 public class FakeMotor extends Motor {
 
     @Override
-    public void setSpeed(int speed) {}
+    public void setSpeed(int speed) {
+    }
 
     @Override
-    public int getSpeed() { return 0; }
+    public int getSpeed() {
+        return 0;
+    }
 
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
     @Override
-    public int getCount() { return 0; }
+    public int getCount() {
+        return 0;
+    }
 
     @Override
-    public void zero() {}
+    public void zero() {
+    }
 
     @Override
-    public void init() {}
+    public void init() {
+    }
 }
