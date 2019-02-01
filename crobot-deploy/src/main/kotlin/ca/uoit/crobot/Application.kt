@@ -45,6 +45,9 @@ fun Application.main() {
     if (!appFiles.exists())
         appFiles.mkdirs()
 
+    if (!versionFile.exists())
+        versionFile.createNewFile()
+
     println(appFiles.absolutePath)
 
     routing {
