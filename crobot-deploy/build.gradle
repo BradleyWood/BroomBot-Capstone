@@ -10,7 +10,6 @@ dependencies {
 
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "io.ktor:ktor-gson:$ktor_version"
-    implementation "org.eclipse.jgit:org.eclipse.jgit:5.2.0.201812061821-r"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
