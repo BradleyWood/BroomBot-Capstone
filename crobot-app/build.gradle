@@ -19,6 +19,7 @@ repositories {
 jar {
     manifest {
         attributes "Main-Class": "ca.uoit.crobot.Application"
+        attributes "crobot-version" : version.toString()
     }
 
     from {
