@@ -24,7 +24,7 @@ import ca.uoit.crobot.event.ConnectionListener;
 import ca.uoit.crobot.messages.DriveCommand;
 
 public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFragmentInteractionListener,
-        DeviceSelectionFragment.OnDeviceSelectionInteractionListener, ConnectionListener {
+        DeviceSelectionFragment.OnDeviceSelectionInteractionListener, ConnectionListener, RCStartStop.OnRCStartStopInteractionListener {
 
     private static final String ROBOT_UUID = "396badb4-1837-11e9-ab14-d663bd873d93";
 
@@ -43,9 +43,13 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 
         deviceSelectionFragment = DeviceSelectionFragment.newInstance();
         RCFragment rcFragment = RCFragment.newInstance();
+        MapData mapData = MapData.newInstance();
+        Settings settings = Settings.newInstance();
 
-        tpa.addTab(getString(ca.uoit.crobot.R.string.devices), deviceSelectionFragment);
         tpa.addTab(getString(ca.uoit.crobot.R.string.rc), rcFragment);
+        tpa.addTab("Connect", deviceSelectionFragment);
+        tpa.addTab("Maps", mapData);
+        tpa.addTab("Settings", settings);
 
         viewPager.setAdapter(tpa);
 

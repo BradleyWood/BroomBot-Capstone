@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
@@ -39,11 +40,19 @@ public class RCFragment extends Fragment {
 
         final JoystickView joystickView = view.findViewById(R.id.joystick);
 
+        final Button button = view.findViewById(R.id.toggleButton);
+
         joystickView.setOnMoveListener((angle, strength) -> {
             if (mListener != null) {
                 mListener.onMoveJoystick(angle, strength);
             }
         }, 100);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                /** put the robot start stop code here*/
+            }
+        });
 
         return view;
     }
