@@ -13,18 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".MapData"
-            android:label="@string/title_activity_map_data"></activity>
-        <activity
-            android:name=".RCStartStop"
-            android:label="@string/title_activity_rcstart_stop" />
-        <activity
-            android:name=".LidarData"
-            android:label="@string/title_activity_lidar_data" />
-        <activity
-            android:name=".Settings"
-            android:label="@string/title_activity_settings" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
