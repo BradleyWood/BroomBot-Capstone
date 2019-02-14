@@ -1,5 +1,7 @@
 package ca.uoit.crobot;
 
+import ca.uoit.crobot.hardware.Lidar;
+import ca.uoit.crobot.hardware.LidarScan;
 import ca.uoit.crobot.model.GameObject;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -16,6 +21,9 @@ public class Display extends JPanel {
     private final List<GameObject> objects;
     @NonNull
     private final Color backgroundColor;
+
+    @NonNull
+    private final Lidar lidar;
 
     private final float width;
 
@@ -53,6 +61,41 @@ public class Display extends JPanel {
 
             g2d.transform(af);
             g2d.drawPolygon(object.getBody());
+        }
+
+        final AffineTransform af = new AffineTransform();
+        af.setToIdentity();
+        g2d.transform(af);
+
+        final LidarScan scan = lidar.scan();
+
+        final float[] angles = scan.getAngles();
+        final float[] ranges = scan.getRanges();
+
+        try {
+            final PrintStream ps = new PrintStream(new FileOutputStream("sim.scan"));
+
+            for (int i = 0; i < angles.length; i++) {
+                final float angle = angles[i];
+
+                if (ranges[i] < 0.26 || ranges[i] >= 10) {
+                    continue;
+                }
+
+                final float dist = ranges[i] / 10 * width;
+
+                ps.println(angle + " " + dist);
+
+                final double x = dist * Math.cos(angle);
+                final double y = dist * Math.sin(angle);
+
+//                System.out.println("x " + x + " y " + y + " dist " + dist);
+
+                g2d.setColor(Color.RED);
+                g2d.drawOval((int) (x / width * size / transformationScaleX + 0.5), (int) (y / height * size / transformationScaleY + 0.5), 4, 4);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
