@@ -1,7 +1,6 @@
 package ca.uoit.crobot;
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 public class RCStartStop extends Fragment {

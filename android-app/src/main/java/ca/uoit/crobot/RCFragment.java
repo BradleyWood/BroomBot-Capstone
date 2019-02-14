@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 
@@ -48,10 +46,8 @@ public class RCFragment extends Fragment {
             }
         }, 100);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                /** put the robot start stop code here*/
-            }
+        button.setOnClickListener(v -> {
+            /* put the robot start stop code here*/
         });
 
         return view;
