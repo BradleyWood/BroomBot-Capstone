@@ -30,7 +30,7 @@ import ca.uoit.crobot.util.LibraryUtils;
 public class Scan {
 
     static {
-        LibraryUtils.loadLibrary("jnibreezyslam_components");
+        LibraryUtils.loadLibrary("libjnibreezyslam_components");
     }
 
     private native void init(
