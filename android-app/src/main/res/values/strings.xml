@@ -13,4 +13,5 @@
     <string name="title_activity_lidar_data">LidarData</string>
     <string name="title_activity_rcstart_stop">RCStartStop</string>
     <string name="title_activity_map_data">MapData</string>
+    <string name="control_the_robot">Control the Robot</string>
 </resources>
