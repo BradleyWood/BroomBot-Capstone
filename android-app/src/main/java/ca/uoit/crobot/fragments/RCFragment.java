@@ -1,4 +1,4 @@
-package ca.uoit.crobot;
+package ca.uoit.crobot.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import ca.uoit.crobot.R;
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 
