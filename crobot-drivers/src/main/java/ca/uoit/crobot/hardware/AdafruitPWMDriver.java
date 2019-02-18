@@ -87,11 +87,11 @@ public class AdafruitPWMDriver {
         return getI2CDevice(DEFAULT_HAT_ADDRESS);
     }
 
-    public static void softwareReset() throws IOException, I2CFactory.UnsupportedBusNumberException {
+    public static synchronized void softwareReset() throws IOException, I2CFactory.UnsupportedBusNumberException {
         getI2CDevice(0x00).write((byte) 0x06);
     }
 
-    public static void setPwmFreq(final int freq) throws IOException, I2CFactory.UnsupportedBusNumberException {
+    public static synchronized void setPwmFreq(final int freq) throws IOException, I2CFactory.UnsupportedBusNumberException {
         final I2CDevice device = getDefaultDevice();
 
         float prescaleValue = 25000000.0f; // 25 MHz
@@ -116,7 +116,7 @@ public class AdafruitPWMDriver {
         device.write(MODE1, (byte) (oldMode | 0x80));
     }
 
-    public static void setPwm(final int channel, final int on, final int off) throws IOException, I2CFactory.UnsupportedBusNumberException {
+    public static synchronized void setPwm(final int channel, final int on, final int off) throws IOException, I2CFactory.UnsupportedBusNumberException {
         final I2CDevice device = getDefaultDevice();
 
         device.write(LED0_ON_L + 4 * channel, (byte) (on & 0xFF));
