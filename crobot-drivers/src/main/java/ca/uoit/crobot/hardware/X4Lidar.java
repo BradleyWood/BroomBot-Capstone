@@ -3,6 +3,7 @@ package ca.uoit.crobot.hardware;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.sun.jna.*;
+import edu.wlu.cs.levy.breezyslam.components.Laser;
 
 
 public class X4Lidar implements Lidar {
@@ -64,6 +65,11 @@ public class X4Lidar implements Lidar {
             throw new IllegalStateException("not initialized");
 
         motorCtrl.setState(PinState.LOW);
+    }
+
+    @Override
+    public Laser getLaserConfig() {
+        return new Laser(640, 7, 360, 10000, 0, 0);
     }
 
     @Override
