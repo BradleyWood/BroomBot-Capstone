@@ -31,22 +31,6 @@ public class Application {
         bluetoothServer.setMessageListener(messageHandler);
 
         bluetoothServer.start();
-
-//        Drive drive = new Drive(AdafruitDCMotor.MOTOR1, AdafruitDCMotor.MOTOR2);
-//
-//        drive.init();
-//
-//        drive.driveDistance(25, 10);
-//        drive.turnLeft(25, 90);
-//
-//        drive.driveDistance(25, 10);
-//        drive.turnLeft(25, 90);
-//
-//        drive.driveDistance(25, 10);
-//        drive.turnLeft(25, 90);
-//
-//        drive.driveDistance(25, 10);
-//        drive.turnLeft(25, 90);
     }
 
     private static final MessageListener messageHandler = new MessageListener() {
