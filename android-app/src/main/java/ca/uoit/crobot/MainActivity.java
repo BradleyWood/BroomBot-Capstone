@@ -12,6 +12,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -21,10 +22,18 @@ import java.util.List;
 import java.util.UUID;
 
 import ca.uoit.crobot.event.ConnectionListener;
+import ca.uoit.crobot.fragments.DeviceSelectionFragment;
+import ca.uoit.crobot.fragments.LidarFragment;
+import ca.uoit.crobot.fragments.MapFragment;
+import ca.uoit.crobot.fragments.RCFragment;
+import ca.uoit.crobot.fragments.SettingsFragment;
+import ca.uoit.crobot.adaptors.TabPageAdaptor;
 import ca.uoit.crobot.messages.DriveCommand;
+import ca.uoit.crobot.messages.LidarReply;
+import ca.uoit.crobot.messages.LidarRequest;
 
 public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFragmentInteractionListener,
-        DeviceSelectionFragment.OnDeviceSelectionInteractionListener, ConnectionListener, RCStartStop.OnRCStartStopInteractionListener {
+        DeviceSelectionFragment.OnDeviceSelectionInteractionListener, LidarFragment.OnLidarDataInteractionListener, ConnectionListener {
 
     private static final String ROBOT_UUID = "396badb4-1837-11e9-ab14-d663bd873d93";
 
@@ -42,19 +51,41 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
         final TabPageAdaptor tpa = new TabPageAdaptor(getSupportFragmentManager());
 
         deviceSelectionFragment = DeviceSelectionFragment.newInstance();
-        RCFragment rcFragment = RCFragment.newInstance();
-        MapData mapData = MapData.newInstance();
-        Settings settings = Settings.newInstance();
+
+        final RCFragment rcFragment = RCFragment.newInstance();
+        final MapFragment mapData = MapFragment.newInstance();
+        final SettingsFragment settings = SettingsFragment.newInstance();
+        final LidarFragment lidarFragment = LidarFragment.newInstance();
 
         tpa.addTab(getString(ca.uoit.crobot.R.string.rc), rcFragment);
         tpa.addTab("Connect", deviceSelectionFragment);
         tpa.addTab("Maps", mapData);
-        tpa.addTab("Settings", settings);
+        tpa.addTab("Lidar", lidarFragment);
+//        tpa.addTab("SettingsFragment", settings);
 
         viewPager.setAdapter(tpa);
 
         final TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        new Thread(() -> {
+            while (true) {
+                if (lidarFragment.isVisible() && connection != null) {
+                    try {
+                        final LidarReply reply = connection.send(new LidarRequest());
+                        Log.d("LIDAR", "reply received");
+                        lidarFragment.update(reply.getAngles(), reply.getRanges());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override

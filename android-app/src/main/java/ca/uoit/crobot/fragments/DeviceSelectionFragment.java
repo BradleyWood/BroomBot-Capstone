@@ -1,4 +1,4 @@
-package ca.uoit.crobot;
+package ca.uoit.crobot.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import ca.uoit.crobot.R;
+import ca.uoit.crobot.adaptors.DeviceAdaptor;
 
 public class DeviceSelectionFragment extends Fragment {
 
@@ -56,7 +58,7 @@ public class DeviceSelectionFragment extends Fragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (mListener != null) {
+        if (mListener != null && da != null) {
             mListener.onRefresh();
         }
     }

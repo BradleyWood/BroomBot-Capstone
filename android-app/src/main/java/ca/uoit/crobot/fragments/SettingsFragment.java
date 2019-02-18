@@ -1,4 +1,4 @@
-package ca.uoit.crobot;
+package ca.uoit.crobot.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,15 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class Settings extends Fragment {
+import ca.uoit.crobot.R;
 
-    private Settings.OnSettingsInteractionListener mListener;
+public class SettingsFragment extends Fragment {
 
-    public Settings() {
+    private SettingsFragment.OnSettingsInteractionListener mListener;
+
+    public SettingsFragment() {
     }
 
-    public static Settings newInstance() {
-        Settings fragment = new Settings();
+    public static SettingsFragment newInstance() {
+        SettingsFragment fragment = new SettingsFragment();
         Bundle args = new Bundle();
 
         fragment.setArguments(args);
@@ -24,16 +26,6 @@ public class Settings extends Fragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /** Button history = (Button)findViewById(R.id.historybutton);
-
-        history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Settings.this, LidarData.class));
-            }
-        }); */
-
     }
 
     @Override

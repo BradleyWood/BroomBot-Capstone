@@ -1,4 +1,4 @@
-package ca.uoit.crobot;
+package ca.uoit.crobot.adaptors;
 
 import android.content.Context;
 import android.graphics.Color;
