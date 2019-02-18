@@ -6,6 +6,7 @@ import ca.uoit.crobot.odometry.pid.PID;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Vector;
 
 public class Drive extends Thread {
 
@@ -17,6 +18,9 @@ public class Drive extends Thread {
 
     // A queue of commands to execute
     private final Queue<Command> commandQueue = new LinkedList<>();
+
+    private int distance = 0;
+    private double angle = 0;
 
     // Motor declarations
     private final Motor leftMotor;
@@ -47,9 +51,9 @@ public class Drive extends Thread {
 
         rightRatePID = new PID(rightMotor, rightSpeedometer::getSpeed, 1);
 
-        leftDistancePID = new PID(new FakeMotor(), leftMotor::getCount, 0.1);
+        leftDistancePID = new PID(new FakeMotor(), leftMotor::getCount, 0.05);
 
-        rightDistancePID = new PID(new FakeMotor(), rightMotor::getCount, 0.1);
+        rightDistancePID = new PID(new FakeMotor(), rightMotor::getCount, 0.05);
     }
 
     /**
@@ -60,8 +64,8 @@ public class Drive extends Thread {
      * @param inches The distance to drive in inches. Enter negative values to reverse direction.
      */
     public void driveDistance(int speed, double inches) {
-        leftRatePID.setMaxSpeed(speed);
-        rightRatePID.setMaxSpeed(speed);
+        leftRatePID.setMaxSetPoint(speed);
+        rightRatePID.setMaxSetPoint(speed);
 
         // Convert the distance to encoder counts
         int distance = (int) (inches * ENCODER_COUNTS_PER_INCH);
@@ -77,24 +81,14 @@ public class Drive extends Thread {
     }
 
     /**
-     * Drive the robot straight at max speed for the given distance in inches. To drive backwards, enter a negative
-     * distance.
-     *
-     * @param inches The distance to drive in inches. Enter negative values to reverse direction.
-     */
-    public void driveDistance(double inches) {
-        driveDistance(100, inches);
-    }
-
-    /**
      * Turn the robot to the left with the given speed.
      *
      * @param speed   The speed to drive the robot.
      * @param degrees The amount to turn in degrees.
      */
     public void turnLeft(int speed, double degrees) {
-        leftRatePID.setMaxSpeed(speed);
-        rightRatePID.setMaxSpeed(speed);
+        leftRatePID.setMaxSetPoint(speed);
+        rightRatePID.setMaxSetPoint(speed);
 
         // Convert the degrees to encoder counts
         int distance = (int) (degrees * ENCODER_COUNTS_PER_DEGREE);
@@ -107,15 +101,6 @@ public class Drive extends Thread {
         if (!this.isAlive()) {
             this.start();
         }
-    }
-
-    /**
-     * Turn the robot to the left.
-     *
-     * @param degrees The amount to turn in degrees.
-     */
-    public void turnLeft(double degrees) {
-        turnLeft(100, degrees);
     }
 
     /**
@@ -125,8 +110,8 @@ public class Drive extends Thread {
      * @param degrees The amount to turn in degrees.
      */
     public void turnRight(int speed, double degrees) {
-        leftRatePID.setMaxSpeed(speed);
-        rightRatePID.setMaxSpeed(speed);
+        leftRatePID.setMaxSetPoint(speed);
+        rightRatePID.setMaxSetPoint(speed);
 
         // Convert the degrees to encoder counts
         int distance = (int) (degrees * ENCODER_COUNTS_PER_DEGREE);
@@ -139,15 +124,6 @@ public class Drive extends Thread {
         if (!this.isAlive()) {
             this.start();
         }
-    }
-
-    /**
-     * Turn the robot to the right.
-     *
-     * @param degrees The amount to turn in degrees.
-     */
-    public void turnRight(double degrees) {
-        turnRight(100, degrees);
     }
 
     @Override
@@ -161,46 +137,66 @@ public class Drive extends Thread {
             // Get the current command
             Command currentCommand = commandQueue.poll();
 
-            // Save the starting position of the encoders to compare against later
-            int leftStartPos = leftMotor.getCount();
-            int rightStartPos = rightMotor.getCount();
-
             switch (currentCommand.commandType) {
 
                 case DRIVE:
                     if (currentCommand.distance < 0) {
                         // Drive backwards at the given speed
-                        leftMotor.setSpeed(-currentCommand.speed);
-                        rightMotor.setSpeed(-currentCommand.speed);
-                        System.out.println("Driving backwards " + currentCommand.distance + " encoder counts");
+                        leftDistancePID.setSetPoint(-currentCommand.distance);
+                        rightDistancePID.setSetPoint(-currentCommand.distance);
+                        //System.out.println("Driving backwards " + currentCommand.distance + " encoder counts");
                     } else {
                         // Drive forwards at the given speed
-                        leftMotor.setSpeed(currentCommand.speed);
-                        rightMotor.setSpeed(currentCommand.speed);
-                        System.out.println("Driving forwards " + currentCommand.distance + " encoder counts");
+                        leftDistancePID.setSetPoint(currentCommand.distance);
+                        rightDistancePID.setSetPoint(currentCommand.distance);
+                        //System.out.println("Driving forwards " + currentCommand.distance + " encoder counts");
                     }
 
                     break;
                 case TURN_LEFT:
                     // Turn left at the given speed
-                    leftMotor.setSpeed(currentCommand.speed);
-                    rightMotor.setSpeed(-currentCommand.speed);
-                    System.out.println("Turning Left " + currentCommand.distance + " encoder counts");
+                    leftDistancePID.setSetPoint(currentCommand.distance);
+                    rightDistancePID.setSetPoint(-currentCommand.distance);
+                    //System.out.println("Turning Left " + currentCommand.distance + " encoder counts");
 
                     break;
                 case TURN_RIGHT:
                     // Turn right at the given speed
-                    leftMotor.setSpeed(-currentCommand.speed);
-                    rightMotor.setSpeed(currentCommand.speed);
-                    System.out.println("Turning right " + currentCommand.distance + " encoder counts");
+                    leftDistancePID.setSetPoint(-currentCommand.distance);
+                    rightDistancePID.setSetPoint(currentCommand.distance);
+                    //System.out.println("Turning right " + currentCommand.distance + " encoder counts");
 
                     break;
             }
 
+            int prevLeftCounts = leftMotor.getCount();
+            int prevRightCounts = rightMotor.getCount();
+
             // Don't move to the next command until the encoder counts reach the given distance
-            while (Math.abs(leftMotor.getCount() - leftStartPos) < Math.abs(currentCommand.distance)
-                    && Math.abs(rightMotor.getCount() - rightStartPos) < Math.abs(currentCommand.distance)) {
-                System.out.println("Waiting for robot to travel to destination. Left encoder: " + (leftMotor.getCount() - leftStartPos) + " Right encoder: " + (rightMotor.getCount() - rightStartPos));
+            while (Math.abs(leftMotor.getCount()) < Math.abs(currentCommand.distance)
+                    && Math.abs(rightMotor.getCount()) < Math.abs(currentCommand.distance)) {
+
+                leftRatePID.setSetPoint(leftDistancePID.get());
+                rightRatePID.setSetPoint(rightDistancePID.get());
+
+                switch(currentCommand.commandType) {
+                    case DRIVE:
+                        distance += ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2;
+                        break;
+                    case TURN_LEFT:
+                        angle -= Math.PI * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2 / ENCODER_COUNTS_PER_DEGREE / 180;
+                        break;
+                    case TURN_RIGHT:
+                        angle += Math.PI * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2 / ENCODER_COUNTS_PER_DEGREE / 180;
+                        break;
+                }
+
+                //System.out.println(distance + " " + angle);
+
+                prevLeftCounts = leftMotor.getCount();
+                prevRightCounts = rightMotor.getCount();
+
+                //System.out.println("Waiting for robot to travel to destination. Left encoder: " + (leftMotor.getCount() - leftStartPos) + " Right encoder: " + (rightMotor.getCount() - rightStartPos));
 
                 try {
                     Thread.sleep(10);

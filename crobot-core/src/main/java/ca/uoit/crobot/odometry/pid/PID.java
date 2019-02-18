@@ -12,7 +12,7 @@ public class PID extends Thread {
 
     private double setPoint = 0;
     private int speed = 0;
-    private int maxSpeed = 0;
+    private int maxSetPoint = Integer.MAX_VALUE;
 
     public PID(Motor motor, PIDInput pidInput, double P) {
         this.motor = motor;
@@ -22,6 +22,9 @@ public class PID extends Thread {
 
     public void setSetPoint(double setPoint) {
         this.setPoint = setPoint;
+        if(setPoint > maxSetPoint) {
+            this.setPoint = maxSetPoint;
+        }
 
         if (!running) {
             this.start();
@@ -36,18 +39,18 @@ public class PID extends Thread {
 
             speed = (int) (P * error + 0.5);
 
-            if (Math.abs(speed) > maxSpeed) {
+            if (Math.abs(speed) > maxSetPoint) {
                 if (speed < 0) {
-                    motor.setSpeed(-maxSpeed);
+                    motor.setSpeed(-maxSetPoint);
                 } else {
-                    motor.setSpeed(maxSpeed);
+                    motor.setSpeed(maxSetPoint);
                 }
             } else {
                 motor.setSpeed(speed);
             }
 
             try {
-                Thread.sleep(10);
+                Thread.sleep(25);
             } catch (InterruptedException e) {
             }
         }
@@ -55,8 +58,8 @@ public class PID extends Thread {
         motor.stop();
     }
 
-    public void setMaxSpeed(int maxSpeed) {
-        this.maxSpeed = maxSpeed;
+    public void setMaxSetPoint(int maxSetPoint) {
+        this.maxSetPoint = maxSetPoint;
     }
 
     public int get() {
