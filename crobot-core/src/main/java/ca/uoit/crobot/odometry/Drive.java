@@ -184,10 +184,10 @@ public class Drive extends Thread {
                         distance += ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2;
                         break;
                     case TURN_LEFT:
-                        angle -= Math.PI * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2 / ENCODER_COUNTS_PER_DEGREE / 180;
+                        angle -= ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2 / ENCODER_COUNTS_PER_DEGREE;
                         break;
                     case TURN_RIGHT:
-                        angle += Math.PI * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2 / ENCODER_COUNTS_PER_DEGREE / 180;
+                        angle += ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2 / ENCODER_COUNTS_PER_DEGREE;
                         break;
                 }
 
