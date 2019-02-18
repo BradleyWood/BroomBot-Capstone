@@ -40,7 +40,7 @@ public class Speedometer {
         prevTime = System.currentTimeMillis();
         previousCount = motor.getCount();
 
-        System.out.println(avgSpeed);
+        //System.out.println(avgSpeed);
 
         return avgSpeed;
     }
