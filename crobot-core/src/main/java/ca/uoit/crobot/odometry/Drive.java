@@ -26,6 +26,9 @@ public class Drive implements Runnable {
     private double xDistance = 0;
     private double yDistance = 0;
     private double angle = 0;
+    private int prevLeftCounts = 0;
+    private int prevRightCounts = 0;
+
 
     // Last time the PoseChange was calculated
     private long lastPoseChangeTime = System.currentTimeMillis();
@@ -98,9 +101,8 @@ public class Drive implements Runnable {
     }
 
     public void run() {
-        // Values of the encoders from the previous loop iteration
-        int prevLeftCounts = leftMotor.getCount();
-        int prevRightCounts = rightMotor.getCount();
+        prevLeftCounts = leftMotor.getCount();
+        prevRightCounts = rightMotor.getCount();
 
         while(driving) {
             switch(dir) {
@@ -108,7 +110,7 @@ public class Drive implements Runnable {
                     // Update distances
                     xDistance += Math.cos(Math.PI * angle / 180) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
                     yDistance += Math.sin(Math.PI * angle / 180) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
-                    angle += ((leftMotor.getCount() - prevLeftCounts) - (rightMotor.getCount() - prevRightCounts)) / ENCODER_COUNTS_PER_DEGREE;
+                    // angle += ((leftMotor.getCount() - prevLeftCounts) - (rightMotor.getCount() - prevRightCounts)) / ENCODER_COUNTS_PER_DEGREE;
                     break;
                 case LEFT:
                     // Update angle
@@ -148,16 +150,19 @@ public class Drive implements Runnable {
             double degrees = 180 * Math.atan(yDistance / xDistance) / Math.PI;
 
             // Update the poseChange object
-            poseChange = new PoseChange(r, degrees, 1000.0 / (System.currentTimeMillis() - lastPoseChangeTime));
+            poseChange = new PoseChange(r, degrees, 0);
         } else {
             // The robot is turning on the spot, so only update the angle. Leave the distance at 0
-            poseChange = new PoseChange(0, angle, 1000.0 / (System.currentTimeMillis() - lastPoseChangeTime));
+            poseChange = new PoseChange(0, angle, 0);
         }
 
         // Zero the tracking variables
         xDistance = 0;
         yDistance = 0;
         angle = 0;
+
+        prevLeftCounts = 0;
+        prevRightCounts = 0;
 
         return poseChange;
     }
