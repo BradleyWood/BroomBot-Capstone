@@ -2,6 +2,7 @@ package ca.uoit.crobot.hardware;
 
 import ca.uoit.crobot.SimulationEntity;
 import ca.uoit.crobot.model.GameObject;
+import edu.wlu.cs.levy.breezyslam.components.Laser;
 import lombok.Data;
 
 import java.awt.*;
@@ -181,6 +182,11 @@ public @Data class SimulatedLidar implements Lidar, SimulationEntity {
     @Override
     public void stopRotation() {
 
+    }
+
+    @Override
+    public Laser getLaserConfig() {
+        return null;
     }
 
     @Override
