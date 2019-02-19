@@ -25,7 +25,7 @@ public class TestDrive {
 
             @Override
             public int getCount() {
-                count += 5;
+                count += 6;
                 return count;
             }
 
@@ -53,7 +53,7 @@ public class TestDrive {
 
             @Override
             public int getCount() {
-                count += 6;
+                count += 5;
                 return count;
             }
             @Override
@@ -66,7 +66,7 @@ public class TestDrive {
 
         drive.init();
 
-        drive.turnLeft(100);
+        drive.drive(100);
 
         try {
             Thread.sleep(2000);
