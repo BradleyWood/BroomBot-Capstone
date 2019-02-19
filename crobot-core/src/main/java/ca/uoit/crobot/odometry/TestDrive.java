@@ -1,6 +1,7 @@
 package ca.uoit.crobot.odometry;
 
 import ca.uoit.crobot.hardware.Motor;
+import edu.wlu.cs.levy.breezyslam.components.PoseChange;
 
 public class TestDrive {
 
@@ -52,7 +53,7 @@ public class TestDrive {
 
             @Override
             public int getCount() {
-                count += 5;
+                count += 6;
                 return count;
             }
             @Override
@@ -65,6 +66,16 @@ public class TestDrive {
 
         drive.init();
 
-        drive.drive(100);
+        drive.turnLeft(100);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        PoseChange change = drive.getPoseChange();
+
+        System.out.println("Distance: " + change.getDxyMm() + " Theta: " + change.getDthetaDegrees());
     }
 }

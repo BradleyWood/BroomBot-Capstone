@@ -13,7 +13,7 @@ public class Drive implements Runnable {
     // A thread that keeps track of where the robot is going
     private Thread tracker;
 
-    // Constant for converting millimeters and encoder counts 93 / 25.4
+    // Constant for converting millimeters and encoder counts
     private static final double ENCODER_COUNTS_PER_MILLIMETER = 2.0362962651058991957556107625584;
 
     // Constant for converting degrees and encoder counts
@@ -108,6 +108,7 @@ public class Drive implements Runnable {
                     // Update distances
                     xDistance += Math.cos(angle) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
                     yDistance += Math.sin(angle) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
+
                     break;
                 case LEFT:
                     // Update angle
@@ -138,19 +139,19 @@ public class Drive implements Runnable {
      * @return A PoseChange object representing the displacement of the robot
      */
     public PoseChange getPoseChange() {
-        PoseChange poseChange = new PoseChange();
+        PoseChange poseChange;
 
         // If the robot is going straight
         if(dir == Direction.STRAIGHT) {
             // Calculate the displacement vector
             double r = Math.sqrt(Math.pow(yDistance, 2) + Math.pow(xDistance, 2));
-            double theta = Math.atan(xDistance / yDistance);
+            double degrees = 180 * Math.atan(yDistance / xDistance) / Math.PI;
 
             // Update the poseChange object
-            poseChange.update(r, theta, 1000.0 / (System.currentTimeMillis() - lastPoseChangeTime));
+            poseChange = new PoseChange(r, degrees, 1000.0 / (System.currentTimeMillis() - lastPoseChangeTime));
         } else {
             // The robot is turning on the spot, so only update the angle. Leave the distance at 0
-            poseChange.update(0, angle, 1000.0 / (System.currentTimeMillis() - lastPoseChangeTime));
+            poseChange = new PoseChange(0, angle, 1000.0 / (System.currentTimeMillis() - lastPoseChangeTime));
         }
 
         // Zero the tracking variables
