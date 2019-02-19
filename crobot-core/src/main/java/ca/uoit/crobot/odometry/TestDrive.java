@@ -65,16 +65,6 @@ public class TestDrive {
 
         drive.init();
 
-        drive.driveDistance(100, 10);
-        drive.turnLeft(100, 90);
-
-        drive.driveDistance(100, 10);
-        drive.turnLeft(100, 90);
-
-        drive.driveDistance(100, 10);
-        drive.turnLeft(100, 90);
-
-        drive.driveDistance(100, 10);
-        drive.turnLeft(100, 90);
+        drive.drive(100);
     }
 }
