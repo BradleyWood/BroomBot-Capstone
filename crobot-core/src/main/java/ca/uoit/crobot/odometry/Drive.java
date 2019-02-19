@@ -108,7 +108,7 @@ public class Drive implements Runnable {
                     // Update distances
                     xDistance += Math.cos(angle) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
                     yDistance += Math.sin(angle) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
-
+                    
                     break;
                 case LEFT:
                     // Update angle
