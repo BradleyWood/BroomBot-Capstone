@@ -99,4 +99,12 @@ public class Laser {
     public double getOffsetMm() {
         return this.offset_mm;
     }
+
+    public int getScanSize() {
+        return scan_size;
+    }
+
+    public double getScanRate() {
+        return scan_rate_hz;
+    }
 }
