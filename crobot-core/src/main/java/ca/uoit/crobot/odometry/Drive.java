@@ -14,7 +14,7 @@ public class Drive implements Runnable {
     private Thread tracker;
 
     // Constant for converting millimeters and encoder counts 93 / 25.4
-    private static final double ENCODER_COUNTS_PER_MILLIMETER = 3.66141732283464;
+    private static final double ENCODER_COUNTS_PER_MILLIMETER = 2.0362962651058991957556107625584;
 
     // Constant for converting degrees and encoder counts
     private static final double ENCODER_COUNTS_PER_DEGREE = 8.2;
