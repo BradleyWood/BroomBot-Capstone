@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.ParcelUuid;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ViewPager viewPager = findViewById(R.id.view_container);
+        final AppViewPager viewPager = findViewById(R.id.view_container);
         final TabPageAdaptor tpa = new TabPageAdaptor(getSupportFragmentManager());
 
         deviceSelectionFragment = DeviceSelectionFragment.newInstance();
@@ -64,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 //        tpa.addTab("SettingsFragment", settings);
 
         viewPager.setAdapter(tpa);
+        viewPager.setEnableSwipe(false);
 
         final TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -72,10 +72,11 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
             while (true) {
                 if (lidarFragment.isVisible() && connection != null) {
                     try {
+                        Log.d("lidar", "request...");
                         final LidarReply reply = connection.send(new LidarRequest());
-                        Log.d("LIDAR", "reply received");
-                        lidarFragment.update(reply.getAngles(), reply.getRanges());
-                    } catch (IOException e) {
+                        Log.d("lidar", "reply...");
+                        runOnUiThread(() -> lidarFragment.update(reply.getAngles(), reply.getRanges()));
+                    } catch (Throwable e) {
                         e.printStackTrace();
                     }
                 } else {
@@ -195,45 +196,44 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 
     @Override
     public void onMoveJoystick(int angle, int strength) {
-        strength = (int) (strength * 0.4f + 0.5);
-
-        final int leftMotor;
-        final int rightMotor;
+        int speed = (int) (strength * 0.4f + 0.5);
+        final DriveCommand.COMMAND command;
 
         if (angle > 45 && angle < 135) {
             // forward
-            leftMotor = strength;
-            rightMotor = strength;
+            command = DriveCommand.COMMAND.FORWARD;
         } else if (angle >= 135 && angle < 135 + 90) {
             // left
-            leftMotor = strength;
-            rightMotor = -strength;
+            command = DriveCommand.COMMAND.LEFT_TURN;
         } else if (angle >= 225 && angle < 315) {
             // back
-            leftMotor = -strength;
-            rightMotor = -strength;
+            command = DriveCommand.COMMAND.BACKWARD;
+            speed = -speed;
         } else {
             // right
-            leftMotor = -strength;
-            rightMotor = strength;
+            command = DriveCommand.COMMAND.RIGHT_TURN;
         }
 
         if (connection != null) {
-            try {
-                connection.send(new DriveCommand(leftMotor, rightMotor));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            int finalSpeed = speed;
+            new Thread(() -> {
+                try {
+                    connection.send(new DriveCommand(finalSpeed, command));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
     }
 
     @Override
     public void connected(final Connection connection) {
-
+        Log.d("BT", "Connected");
     }
 
     @Override
     public void disconnected(final Connection connection) {
+        Log.d("BT", "Disconnected");
         runOnUiThread(() -> {
             deviceSelectionFragment.setDisconnected();
             Toast.makeText(this, ca.uoit.crobot.R.string.disconnected, Toast.LENGTH_SHORT).show();
