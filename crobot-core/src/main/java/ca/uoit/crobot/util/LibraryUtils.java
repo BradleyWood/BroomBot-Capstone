@@ -13,7 +13,7 @@ public class LibraryUtils {
         final File outputFile = new File(tmpDir, fileName);
 
         if (!outputFile.exists()) {
-            final InputStream in = LibraryUtils.class.getResourceAsStream(fileName);
+            final InputStream in = LibraryUtils.class.getClassLoader().getResourceAsStream(fileName);
 
             if (in == null) {
                 final File file = new File(new File("crobot-core/src/main/resources/"), fileName);
