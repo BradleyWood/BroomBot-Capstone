@@ -10,7 +10,9 @@ public @Data class DriveCommand extends Message {
         FORWARD,
         BACKWARD,
         LEFT_TURN,
-        RIGHT_TURN
+        RIGHT_TURN,
+        PROGRAM_START,
+        PROGRAM_STOP
     }
 
     private final int speed;

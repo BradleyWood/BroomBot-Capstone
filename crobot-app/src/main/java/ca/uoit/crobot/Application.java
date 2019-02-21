@@ -37,7 +37,6 @@ public class Application {
         deviceController.init();
 
         robot = new CRobot(deviceController);
-        robot.start();
 
         final Server server = new Server();
         final BluetoothServer bts = new BluetoothServer();
@@ -72,6 +71,10 @@ public class Application {
                     deviceController.getDriveController().turnLeft(command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.RIGHT_TURN) {
                     deviceController.getDriveController().turnRight(command.getSpeed());
+                } else if (command.getCommand() == DriveCommand.COMMAND.PROGRAM_START && !robot.isRunning()) {
+                    robot.start();
+                } else if (command.getCommand() == DriveCommand.COMMAND.PROGRAM_STOP && robot.isRunning()) {
+                    robot.stop();
                 }
             }
         }
