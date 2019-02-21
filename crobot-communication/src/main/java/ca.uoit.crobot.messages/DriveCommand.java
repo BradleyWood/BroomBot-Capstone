@@ -6,7 +6,14 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public @Data class DriveCommand extends Message {
 
-    private final int leftMotorSpeed;
-    private final int rightMotorSpeed;
+    public enum COMMAND {
+        FORWARD,
+        BACKWARD,
+        LEFT_TURN,
+        RIGHT_TURN
+    }
+
+    private final int speed;
+    private final COMMAND command;
 
 }
