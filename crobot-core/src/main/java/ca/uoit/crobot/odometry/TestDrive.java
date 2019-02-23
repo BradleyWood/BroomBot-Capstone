@@ -53,7 +53,7 @@ public class TestDrive {
 
             @Override
             public int getCount() {
-                count += 5;
+                count += 2;
                 return count;
             }
             @Override

@@ -105,32 +105,34 @@ public class Drive implements Runnable {
         prevRightCounts = rightMotor.getCount();
 
         while(driving) {
-            switch(dir) {
-                case STRAIGHT:
-                    // Update distances
-                    xDistance += Math.cos(Math.PI * angle / 180) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
-                    yDistance += Math.sin(Math.PI * angle / 180) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
-                    // angle += ((leftMotor.getCount() - prevLeftCounts) - (rightMotor.getCount() - prevRightCounts)) / ENCODER_COUNTS_PER_DEGREE;
-                    break;
-                case LEFT:
-                    // Update angle
-                    angle -= ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_DEGREE;
-                    break;
-                case RIGHT:
-                    // Update angle
-                    angle += ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_DEGREE;
-                    break;
-            }
+            synchronized (this) {
+                switch (dir) {
+                    case STRAIGHT:
+                        // Update distances
+                        xDistance += Math.sin(Math.PI * angle / 180) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
+                        yDistance += Math.cos(Math.PI * angle / 180) * ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_MILLIMETER;
+                        // angle += ((leftMotor.getCount() - prevLeftCounts) - (rightMotor.getCount() - prevRightCounts)) / ENCODER_COUNTS_PER_DEGREE;
+                        break;
+                    case LEFT:
+                        // Update angle
+                        angle -= ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_DEGREE;
+                        break;
+                    case RIGHT:
+                        // Update angle
+                        angle += ((leftMotor.getCount() - prevLeftCounts) + (rightMotor.getCount() - prevRightCounts)) / 2.0 / ENCODER_COUNTS_PER_DEGREE;
+                        break;
+                }
 
-            // Save current encoder counts for the next loop iteration
-            prevLeftCounts = leftMotor.getCount();
-            prevRightCounts = rightMotor.getCount();
+                // Save current encoder counts for the next loop iteration
+                prevLeftCounts = leftMotor.getCount();
+                prevRightCounts = rightMotor.getCount();
 
-            // System.out.println("X: " + xDistance + " Y: " + yDistance + " Angle: " + angle);
+                // System.out.println("X: " + xDistance + " Y: " + yDistance + " Angle: " + angle);
 
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                }
             }
         }
     }
@@ -141,26 +143,49 @@ public class Drive implements Runnable {
      * @return A PoseChange object representing the displacement of the robot
      */
     public PoseChange getPoseChange() {
-        PoseChange poseChange;
 
-        // If the robot is going straight
-        if(dir == Direction.STRAIGHT) {
-            // Calculate the displacement vector
-            double r = Math.sqrt(Math.pow(yDistance, 2) + Math.pow(xDistance, 2));
-            double degrees = 180 * Math.atan(yDistance / xDistance) / Math.PI;
+        synchronized (this) {
+            PoseChange poseChange;
 
-            // Update the poseChange object
-            poseChange = new PoseChange(r, degrees, 0);
+            // If the robot is going straight
+            if (dir == Direction.STRAIGHT) {
+                // Calculate the displacement vector
+                double r = Math.sqrt(Math.pow(yDistance, 2) + Math.pow(xDistance, 2));
+                double degrees = arctan(yDistance, xDistance);
+
+                // Update the poseChange object
+                poseChange = new PoseChange(r, degrees, 0);
+            } else {
+                // The robot is turning on the spot, so only update the angle. Leave the distance at 0
+                poseChange = new PoseChange(0, angle, 0);
+            }
+
+            // Zero the tracking variables
+            xDistance = 0;
+            yDistance = 0;
+            angle = 0;
+
+            return poseChange;
+        }
+    }
+
+    private double arctan(double y, double x) {
+        double degrees;
+
+        System.out.println(y + " " + x);
+
+        if (x == 0 && y > 0) {
+            degrees = 0;
+        } else if(x == 0 && y < 0) {
+            degrees = 180;
+        } else if(x > 0 && y == 0) {
+            degrees = 90;
+        } else if(x < 0 && y == 0) {
+            degrees = -90;
         } else {
-            // The robot is turning on the spot, so only update the angle. Leave the distance at 0
-            poseChange = new PoseChange(0, angle, 0);
+            degrees = 180 * Math.atan(y / x) / Math.PI;
         }
 
-        // Zero the tracking variables
-        xDistance = 0;
-        yDistance = 0;
-        angle = 0;
-
-        return poseChange;
+        return degrees;
     }
 }
