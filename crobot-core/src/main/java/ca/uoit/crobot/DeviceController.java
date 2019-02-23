@@ -18,7 +18,7 @@ public @Data class DeviceController {
     private boolean initialized = false;
 
     public void init() throws TimeoutException {
-        parallelInit(leftMotor, rightMotor);
+        parallelInit(leftMotor, rightMotor, lidar);
         lidar.stopRotation();
         driveController = new Drive(leftMotor, rightMotor);
         initialized = true;
@@ -48,7 +48,7 @@ public @Data class DeviceController {
             threads[i].start();
         }
 
-        final long timeout = 10000;
+        final long timeout = 25000;
         final long start = System.currentTimeMillis();
 
         for (int j = 0; j < threads.length; j++) {
