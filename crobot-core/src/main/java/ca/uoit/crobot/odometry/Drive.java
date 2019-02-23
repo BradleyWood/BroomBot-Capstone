@@ -161,9 +161,6 @@ public class Drive implements Runnable {
         yDistance = 0;
         angle = 0;
 
-        prevLeftCounts = 0;
-        prevRightCounts = 0;
-
         return poseChange;
     }
 }
