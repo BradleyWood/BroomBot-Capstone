@@ -1,7 +1,9 @@
 package ca.uoit.crobot;
 
 import ca.uoit.crobot.hardware.LidarScan;
+import ca.uoit.crobot.odometry.Drive;
 import edu.wlu.cs.levy.breezyslam.algorithms.RMHCSLAM;
+import edu.wlu.cs.levy.breezyslam.components.PoseChange;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,19 +61,14 @@ public class CRobot {
 
         executorService.scheduleAtFixedRate(() -> {
             if (!obsticleFlag.get()) {
-                deviceController.getDriveController().drive(29);
+                deviceController.getDriveController().drive(20);
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
-    private enum DESCISION {
-        LEFT,
-        RIGHT
-    }
-
     private Runnable collisionTask = new Runnable() {
 
-        DESCISION descision = null;
+        Drive.Direction decision = null;
         long lastDecision = 0;
 
         @Override
@@ -82,23 +79,23 @@ public class CRobot {
                 if (scan == null)
                     return;
 
-                int left = countPoints(scan, 0.3, Math.PI / 1.6, Math.PI);
-                int right = countPoints(scan, 0.3, -Math.PI, -Math.PI / 1.6);
+                int right = countPoints(scan, 0.4, Math.PI / 1.6, Math.PI);
+                int left = countPoints(scan, 0.4, -Math.PI, -Math.PI / 1.6);
 
-                if (left + right > 160 || left > 70 || right > 70) {
+                if (left + right > 110 || left > 50|| right > 50) {
                     if (obsticleFlag.getAndSet(true) && System.currentTimeMillis() - lastDecision > 1000) {
                         if (left > right) {
-                            descision = DESCISION.RIGHT;
+                            decision = Drive.Direction.RIGHT;
                         } else {
-                            descision = DESCISION.LEFT;
+                            decision = Drive.Direction.LEFT;
                         }
                         lastDecision = System.currentTimeMillis();
                     }
 
-                    if (descision == DESCISION.RIGHT) {
-                        deviceController.getDriveController().turnRight(30);
+                    if (decision == Drive.Direction.RIGHT) {
+                        deviceController.getDriveController().turnRight(15);
                     } else {
-                        deviceController.getDriveController().turnLeft(30);
+                        deviceController.getDriveController().turnLeft(15);
                     }
                 } else if (obsticleFlag.get()) {
                     deviceController.getDriveController().stop();
@@ -154,7 +151,13 @@ public class CRobot {
             final LidarScan scan = getScan();
 
             if (scan != lastScan) {
-                rmhcslam.update(getRangesInMillimeters(scan));
+                final PoseChange pc = deviceController.getDriveController().getPoseChange();
+
+                if (pc.getDxyMm() > 0.001 || Math.abs(pc.getDthetaDegrees()) > 0.001) {
+                    rmhcslam.update(getRangesInMillimeters(scan), pc);
+                } else {
+                    rmhcslam.update(getRangesInMillimeters(scan));
+                }
                 lastScan = scan;
             }
         }
