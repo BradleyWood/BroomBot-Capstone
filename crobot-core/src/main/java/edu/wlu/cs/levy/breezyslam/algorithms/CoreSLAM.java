@@ -57,7 +57,7 @@ public abstract class CoreSLAM {
     /**
      * The width in millimeters of each "hole" in the map (essentially, wall width)
      */
-    public double hole_width_mm = 600;
+    public double hole_width_mm = 155;
 
     protected Laser laser;
 
