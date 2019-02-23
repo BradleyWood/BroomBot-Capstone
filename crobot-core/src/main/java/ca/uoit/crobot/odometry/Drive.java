@@ -5,7 +5,7 @@ import edu.wlu.cs.levy.breezyslam.components.PoseChange;
 
 public class Drive implements Runnable {
 
-    enum Direction {STRAIGHT, LEFT, RIGHT}
+    public enum Direction {STRAIGHT, LEFT, RIGHT}
 
     // Current direction of the robot
     private Direction dir = Direction.STRAIGHT;
@@ -26,8 +26,6 @@ public class Drive implements Runnable {
     private double xDistance = 0;
     private double yDistance = 0;
     private double angle = 0;
-    private int prevLeftCounts = 0;
-    private int prevRightCounts = 0;
 
 
     // Last time the PoseChange was calculated
@@ -47,7 +45,8 @@ public class Drive implements Runnable {
         this.rightMotor = rightMotor;
     }
 
-    /** Drive forwards at the given speed
+    /**
+     * Drive forwards at the given speed
      *
      * @param speed The speed to drive at
      */
@@ -55,11 +54,17 @@ public class Drive implements Runnable {
         leftMotor.setSpeed(speed);
         rightMotor.setSpeed(speed);
 
+        if (speed == 0) {
+            driving = false;
+            return;
+        }
+
         dir = Direction.STRAIGHT;
         start();
     }
 
-    /** Turn left at the given speed
+    /**
+     * Turn left at the given speed
      *
      * @param speed The speed to turn at
      */
@@ -67,11 +72,17 @@ public class Drive implements Runnable {
         leftMotor.setSpeed(-speed);
         rightMotor.setSpeed(speed);
 
+        if (speed == 0) {
+            driving = false;
+            return;
+        }
+
         dir = Direction.LEFT;
         start();
     }
 
-    /** Turn right at the given speed
+    /**
+     * Turn right at the given speed
      *
      * @param speed The speed to turn at
      */
@@ -79,11 +90,18 @@ public class Drive implements Runnable {
         leftMotor.setSpeed(speed);
         rightMotor.setSpeed(-speed);
 
+        if (speed == 0) {
+            driving = false;
+            return;
+        }
+
         dir = Direction.RIGHT;
         start();
     }
 
-    /** Stop the motors and the tracker thread */
+    /**
+     * Stop the motors and the tracker thread
+     */
     public void stop() {
         leftMotor.stop();
         rightMotor.stop();
@@ -92,7 +110,7 @@ public class Drive implements Runnable {
 
     private void start() {
         // Start the tracker thread if it has not been created, or if it is not currently running
-        if(tracker == null || !tracker.isAlive()) {
+        if (tracker == null || !tracker.isAlive()) {
             tracker = new Thread(this);
             tracker.start();
 
@@ -101,8 +119,8 @@ public class Drive implements Runnable {
     }
 
     public void run() {
-        prevLeftCounts = leftMotor.getCount();
-        prevRightCounts = rightMotor.getCount();
+        int prevLeftCounts = leftMotor.getCount();
+        int prevRightCounts = rightMotor.getCount();
 
         while(driving) {
             synchronized (this) {
@@ -137,7 +155,8 @@ public class Drive implements Runnable {
         }
     }
 
-    /** Calculates a PoseChange object based on the direction the robot is travelling. This method will zero
+    /**
+     * Calculates a PoseChange object based on the direction the robot is travelling. This method will zero
      * the tracking values.
      *
      * @return A PoseChange object representing the displacement of the robot
@@ -147,6 +166,9 @@ public class Drive implements Runnable {
         synchronized (this) {
             PoseChange poseChange;
 
+            double dtSeconds = (System.currentTimeMillis() - lastPoseChangeTime) / 1000.0;
+            lastPoseChangeTime = System.currentTimeMillis();
+
             // If the robot is going straight
             if (dir == Direction.STRAIGHT) {
                 // Calculate the displacement vector
@@ -154,10 +176,10 @@ public class Drive implements Runnable {
                 double degrees = arctan(yDistance, xDistance);
 
                 // Update the poseChange object
-                poseChange = new PoseChange(r, degrees, 0);
+                poseChange = new PoseChange(r, degrees, dtSeconds);
             } else {
                 // The robot is turning on the spot, so only update the angle. Leave the distance at 0
-                poseChange = new PoseChange(0, angle, 0);
+                poseChange = new PoseChange(0, angle, dtSeconds);
             }
 
             // Zero the tracking variables
