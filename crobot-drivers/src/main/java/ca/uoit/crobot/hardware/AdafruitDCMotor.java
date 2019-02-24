@@ -1,7 +1,9 @@
 package ca.uoit.crobot.hardware;
 
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.pi4j.io.i2c.I2CFactory;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AdafruitDCMotor extends Motor {
@@ -29,7 +31,7 @@ public class AdafruitDCMotor extends Motor {
     }
 
     @Override
-    public void setSpeed(final int speed) {
+    public synchronized void setSpeed(final int speed) {
         if (Math.abs(speed) > 100)
             throw new IllegalArgumentException("speed out of bounds [-100, 100]");
 
@@ -49,7 +51,9 @@ public class AdafruitDCMotor extends Motor {
 
             AdafruitPWMDriver.setPwm(pwnPin, 0, nv * 16);
             this.speed = speed;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } catch (IOException | I2CFactory.UnsupportedBusNumberException e) {
             e.printStackTrace();
             System.exit(0);
         }
