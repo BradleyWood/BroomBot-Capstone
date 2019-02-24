@@ -83,7 +83,7 @@ public class CRobot {
                 int left = countPoints(scan, 0.30, -Math.PI, -Math.PI / 1.6);
 
                 if (left + right > 8 || left > 5|| right > 5) {
-                    if (obsticleFlag.getAndSet(true) && System.currentTimeMillis() - lastDecision > 1000) {
+                    if (obsticleFlag.getAndSet(true) && System.currentTimeMillis() - lastDecision > 2000) {
                         if (left > right) {
                             decision = Drive.Direction.RIGHT;
                         } else {
