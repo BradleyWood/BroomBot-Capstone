@@ -79,10 +79,10 @@ public class CRobot {
                 if (scan == null)
                     return;
 
-                int right = countPoints(scan, 0.4, Math.PI / 1.6, Math.PI);
-                int left = countPoints(scan, 0.4, -Math.PI, -Math.PI / 1.6);
+                int right = countPoints(scan, 0.30, Math.PI / 1.6, Math.PI);
+                int left = countPoints(scan, 0.30, -Math.PI, -Math.PI / 1.6);
 
-                if (left + right > 110 || left > 50|| right > 50) {
+                if (left + right > 8 || left > 5|| right > 5) {
                     if (obsticleFlag.getAndSet(true) && System.currentTimeMillis() - lastDecision > 1000) {
                         if (left > right) {
                             decision = Drive.Direction.RIGHT;
@@ -115,7 +115,7 @@ public class CRobot {
         int count = 0;
 
         for (int i = 0; i < ranges.length; i++) {
-            if (angles[i] >= minAngle && angles[i] <= maxAngle && ranges[i] < minRange) {
+            if (angles[i] >= minAngle && angles[i] <= maxAngle && ranges[i] < minRange && ranges[i] > 0.01) {
                 count++;
             }
         }
