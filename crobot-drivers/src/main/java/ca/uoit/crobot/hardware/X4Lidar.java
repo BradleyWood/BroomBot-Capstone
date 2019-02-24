@@ -8,7 +8,7 @@ import edu.wlu.cs.levy.breezyslam.components.Laser;
 
 public class X4Lidar implements Lidar {
 
-    private static final int MOTOR_CTRL_PIN = 7;
+    private static final int MOTOR_CTRL_PIN = 29;
     private static final int BAUD_RATE = 230400;
 
     private GpioPinDigitalOutput motorCtrl;

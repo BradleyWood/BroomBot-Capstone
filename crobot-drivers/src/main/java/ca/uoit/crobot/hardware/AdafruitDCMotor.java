@@ -6,8 +6,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AdafruitDCMotor extends Motor {
 
-    public static AdafruitDCMotor MOTOR1 = new AdafruitDCMotor(13, 12, 11, 27, 24);
-    public static AdafruitDCMotor MOTOR2 = new AdafruitDCMotor(8, 9, 10, 28, 29);
+    public static AdafruitDCMotor MOTOR1 = new AdafruitDCMotor(13, 12, 11, 23, 27);
+    public static AdafruitDCMotor MOTOR2 = new AdafruitDCMotor(8, 9, 10, 24, 28);
     public static AdafruitDCMotor MOTOR3 = new AdafruitDCMotor(2, 3, 4, -1, -1);
     public static AdafruitDCMotor MOTOR4 = new AdafruitDCMotor(7, 6, 5, -1, -1);
 
