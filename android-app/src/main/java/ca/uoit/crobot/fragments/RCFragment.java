@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ToggleButton;
 
 import ca.uoit.crobot.R;
 import io.github.controlwear.virtual.joystick.android.JoystickView;
@@ -39,7 +39,7 @@ public class RCFragment extends Fragment {
 
         final JoystickView joystickView = view.findViewById(R.id.joystick);
 
-        final Button button = view.findViewById(R.id.toggleButton);
+        final ToggleButton button = view.findViewById(R.id.toggleButton);
 
         joystickView.setOnMoveListener((angle, strength) -> {
             if (mListener != null) {
@@ -47,9 +47,7 @@ public class RCFragment extends Fragment {
             }
         }, 100);
 
-        button.setOnClickListener(v -> {
-            /* put the robot start stop code here*/
-        });
+        button.setOnClickListener(v -> mListener.onToggleDevice(button.isChecked()));
 
         return view;
     }
@@ -72,6 +70,8 @@ public class RCFragment extends Fragment {
     }
 
     public interface OnRCFragmentInteractionListener {
+
+        void onToggleDevice(boolean enabled);
 
         void onMoveJoystick(int angle, int strength);
     }

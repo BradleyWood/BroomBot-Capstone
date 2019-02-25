@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.ParcelUuid;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,9 +26,7 @@ import ca.uoit.crobot.fragments.MapFragment;
 import ca.uoit.crobot.fragments.RCFragment;
 import ca.uoit.crobot.fragments.SettingsFragment;
 import ca.uoit.crobot.adaptors.TabPageAdaptor;
-import ca.uoit.crobot.messages.DriveCommand;
-import ca.uoit.crobot.messages.LidarReply;
-import ca.uoit.crobot.messages.LidarRequest;
+import ca.uoit.crobot.messages.*;
 
 public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFragmentInteractionListener,
         DeviceSelectionFragment.OnDeviceSelectionInteractionListener, LidarFragment.OnLidarDataInteractionListener, ConnectionListener {
@@ -72,9 +69,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
             while (true) {
                 if (lidarFragment.isVisible() && connection != null) {
                     try {
-                        Log.d("lidar", "request...");
                         final LidarReply reply = connection.send(new LidarRequest());
-                        Log.d("lidar", "reply...");
                         runOnUiThread(() -> lidarFragment.update(reply.getAngles(), reply.getRanges()));
                     } catch (Throwable e) {
                         e.printStackTrace();
@@ -122,17 +117,12 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
                 final String name = device.getName();
                 final String address = device.getAddress();
 
-                if (device.getUuids() != null) {
-                    for (final ParcelUuid parcelUuid : device.getUuids()) {
-                        if (ROBOT_UUID.equals(parcelUuid.getUuid().toString())) {
-                            deviceList.add(device);
-                            deviceSelectionFragment.addDevice(name, address);
+                if (name != null && name.contains("rasp")) {
+                    deviceList.add(device);
+                    deviceSelectionFragment.addDevice(name, address);
 
-                            if (connection != null && connection.isRunning() && address.equals(deviceAddress)) {
-                                deviceSelectionFragment.setConnected(address);
-                            }
-                            break;
-                        }
+                    if (connection != null && connection.isRunning() && address.equals(deviceAddress)) {
+                        deviceSelectionFragment.setConnected(address);
                     }
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(intent.getAction())) {
@@ -191,6 +181,22 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
                 connection = null;
             } catch (Exception ignored) {
             }
+        }
+    }
+
+    @Override
+    public void onToggleDevice(final boolean enabled) {
+        try {
+            if (enabled) {
+                if (connection != null) {
+                    connection.send(new DriveCommand(0, DriveCommand.COMMAND.PROGRAM_START));
+                }
+            } else {
+                if (connection != null) {
+                    connection.send(new DriveCommand(0, DriveCommand.COMMAND.PROGRAM_STOP));
+                }
+            }
+        } catch (Exception ignored) {
         }
     }
 

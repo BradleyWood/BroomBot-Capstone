@@ -41,7 +41,6 @@ public class LidarView extends View {
         int centerX = imgWidth / 2;
         int centerY = getHeight() / 2;
 
-        System.out.println(angles.length);
         if (angles != null && ranges != null) {
             for (int i = 0; i < angles.length; i++) {
                 double y = Math.sin(angles[i]) * ranges[i] / 5 * imgWidth + centerY;
