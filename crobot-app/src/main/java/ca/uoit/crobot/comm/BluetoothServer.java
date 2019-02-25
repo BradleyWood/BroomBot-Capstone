@@ -35,6 +35,7 @@ public class BluetoothServer implements Runnable {
         if (notifier != null) {
             throw new IllegalStateException("Server is already running");
         } else {
+            running = true;
             new Thread(this).start();
         }
     }
@@ -58,7 +59,7 @@ public class BluetoothServer implements Runnable {
             UUID uuid = new UUID(UUID, false);
             System.out.println(uuid.toString());
 
-            String url = "btspp://localhost:" + uuid.toString() + ";name=CleaningRobot";
+            String url = "btspp://localhost:" + uuid.toString() + ";name=CleaningRobot;authenticate=false;encrypt=false;master=false";
 
             notifier = (StreamConnectionNotifier) Connector.open(url);
         } catch (Exception e) {
@@ -70,7 +71,6 @@ public class BluetoothServer implements Runnable {
             try {
                 final StreamConnection sc = notifier.acceptAndOpen();
 
-                System.out.println("Accept and open...");
                 final Connection connection = new Connection(sc::close, sc.openInputStream(), sc.openOutputStream());
 
                 if (connectionListener != null) {
