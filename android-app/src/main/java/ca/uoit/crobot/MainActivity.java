@@ -67,18 +67,21 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 
         new Thread(() -> {
             while (true) {
-                if (lidarFragment.isVisible() && connection != null) {
-                    try {
+                try {
+                    if (lidarFragment.isVisible() && connection != null) {
                         final LidarReply reply = connection.send(new LidarRequest());
                         runOnUiThread(() -> lidarFragment.update(reply.getAngles(), reply.getRanges()));
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
+                    } else if (mapData.isVisible() && connection != null) {
+                        final MapReply reply = connection.send(new MapRequest());
+                        final byte[] map = reply.getMap();
+
+                        if (map != null && map.length > 0) {
+                            runOnUiThread(() -> mapData.update(reply.getMAP_SIZE_PIXELS(), reply.getMap()));
+                        }
+                    } else {
                         Thread.sleep(500);
-                    } catch (InterruptedException e) {
                     }
+                } catch (Exception ignored) {
                 }
             }
         }).start();
