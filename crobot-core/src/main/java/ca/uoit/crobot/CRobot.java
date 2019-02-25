@@ -55,7 +55,7 @@ public class CRobot {
         executorService.scheduleAtFixedRate(scanUpdate, 0, (long) (1000 / scanRate), TimeUnit.MILLISECONDS);
 
         executorService.scheduleAtFixedRate(mapUpdate, (long) (1000 / scanRate) + 50,
-                (long) (1000 / scanRate), TimeUnit.MILLISECONDS);
+                1, TimeUnit.MILLISECONDS);
 
         executorService.scheduleAtFixedRate(collisionTask, 100, (long) (1000 / scanRate + 50), TimeUnit.MILLISECONDS);
 
@@ -79,10 +79,10 @@ public class CRobot {
                 if (scan == null)
                     return;
 
-                int right = countPoints(scan, 0.30, Math.PI / 1.6, Math.PI);
-                int left = countPoints(scan, 0.30, -Math.PI, -Math.PI / 1.6);
+                int right = countPoints(scan, 0.30, Math.PI / 1.7, Math.PI);
+                int left = countPoints(scan, 0.30, -Math.PI, -Math.PI / 1.7);
 
-                if (left + right > 8 || left > 5|| right > 5) {
+                if (left + right > 8 || left > 5 || right > 5) {
                     if (obsticleFlag.getAndSet(true) && System.currentTimeMillis() - lastDecision > 2000) {
                         if (left > right) {
                             decision = Drive.Direction.RIGHT;
@@ -144,6 +144,7 @@ public class CRobot {
 
     private Runnable mapUpdate = new Runnable() {
 
+        long lastTime = System.currentTimeMillis();
         private LidarScan lastScan;
 
         @Override
@@ -152,12 +153,17 @@ public class CRobot {
 
             if (scan != lastScan) {
                 final PoseChange pc = deviceController.getDriveController().getPoseChange();
+                long start = System.currentTimeMillis();
 
                 if (pc.getDxyMm() > 0.001 || Math.abs(pc.getDthetaDegrees()) > 0.001) {
                     rmhcslam.update(getRangesInMillimeters(scan), pc);
                 } else {
                     rmhcslam.update(getRangesInMillimeters(scan));
                 }
+
+                System.out.println("Map Time: " + (System.currentTimeMillis() - start));
+                lastTime = System.currentTimeMillis();
+
                 lastScan = scan;
             }
         }
@@ -188,8 +194,12 @@ public class CRobot {
         final int[] scanMM = new int[deviceController.getLidar().getLaserConfig().getScanSize()];
         final float[] ranges = scan.getRanges();
 
-        for (int i = 0; i < scanMM.length && i < ranges.length; i++) {
-            scanMM[i] = (int) (ranges[i] * 1000);
+        for (int i = 0, j = 0; i < scanMM.length && j < ranges.length; i++, j += 2) {
+            if (ranges[j] < 0.25) {
+                scanMM[i] = 0;
+            } else {
+                scanMM[i] = (int) (ranges[j] * 1000);
+            }
         }
 
         return scanMM;

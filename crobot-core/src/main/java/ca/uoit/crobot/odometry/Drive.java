@@ -118,11 +118,12 @@ public class Drive implements Runnable {
         }
     }
 
+    @Override
     public void run() {
         int prevLeftCounts = leftMotor.getCount();
         int prevRightCounts = rightMotor.getCount();
 
-        while(driving) {
+        while (driving) {
             synchronized (this) {
                 switch (dir) {
                     case STRAIGHT:
@@ -144,13 +145,10 @@ public class Drive implements Runnable {
                 // Save current encoder counts for the next loop iteration
                 prevLeftCounts = leftMotor.getCount();
                 prevRightCounts = rightMotor.getCount();
-
-                // System.out.println("X: " + xDistance + " Y: " + yDistance + " Angle: " + angle);
-
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                }
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignored) {
             }
         }
     }
@@ -163,46 +161,42 @@ public class Drive implements Runnable {
      */
     public PoseChange getPoseChange() {
 
-        synchronized (this) {
-            PoseChange poseChange;
+        PoseChange poseChange;
 
-            double dtSeconds = (System.currentTimeMillis() - lastPoseChangeTime) / 1000.0;
-            lastPoseChangeTime = System.currentTimeMillis();
+        double dtSeconds = (System.currentTimeMillis() - lastPoseChangeTime) / 1000.0;
+        lastPoseChangeTime = System.currentTimeMillis();
 
-            // If the robot is going straight
-            if (dir == Direction.STRAIGHT) {
-                // Calculate the displacement vector
-                double r = Math.sqrt(Math.pow(yDistance, 2) + Math.pow(xDistance, 2));
-                double degrees = arctan(yDistance, xDistance);
+        // If the robot is going straight
+        if (dir == Direction.STRAIGHT) {
+            // Calculate the displacement vector
+            double r = Math.sqrt(Math.pow(yDistance, 2) + Math.pow(xDistance, 2));
+            double degrees = arctan(yDistance, xDistance);
 
-                // Update the poseChange object
-                poseChange = new PoseChange(r, degrees, dtSeconds);
-            } else {
-                // The robot is turning on the spot, so only update the angle. Leave the distance at 0
-                poseChange = new PoseChange(0, angle, dtSeconds);
-            }
-
-            // Zero the tracking variables
-            xDistance = 0;
-            yDistance = 0;
-            angle = 0;
-
-            return poseChange;
+            // Update the poseChange object
+            poseChange = new PoseChange(r, degrees, dtSeconds);
+        } else {
+            // The robot is turning on the spot, so only update the angle. Leave the distance at 0
+            poseChange = new PoseChange(0, angle, dtSeconds);
         }
+
+        // Zero the tracking variables
+        xDistance = 0;
+        yDistance = 0;
+        angle = 0;
+
+        return poseChange;
     }
 
     private double arctan(double y, double x) {
         double degrees;
 
-        System.out.println(y + " " + x);
-
         if (x == 0 && y > 0) {
             degrees = 0;
-        } else if(x == 0 && y < 0) {
+        } else if (x == 0 && y < 0) {
             degrees = 180;
-        } else if(x > 0 && y == 0) {
+        } else if (x > 0 && y == 0) {
             degrees = 90;
-        } else if(x < 0 && y == 0) {
+        } else if (x < 0 && y == 0) {
             degrees = -90;
         } else {
             degrees = 180 * Math.atan(y / x) / Math.PI;
