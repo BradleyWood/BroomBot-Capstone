@@ -16,9 +16,8 @@ import java.util.concurrent.TimeoutException;
 
 public class Application {
 
-    private static final DeviceController deviceController = new DeviceController(AdafruitDCMotor.MOTOR1, AdafruitDCMotor.MOTOR2, new X4Lidar());
+    private static final CRobot robot = new CRobot(AdafruitDCMotor.MOTOR1, AdafruitDCMotor.MOTOR2, new X4Lidar());
     private static long lastDriveCommand = 0;
-    private static CRobot robot;
 
     public static void main(String[] args) throws InterruptedException, TimeoutException {
         if (args.length > 0 && "--update".equals(args[0])) {
@@ -34,9 +33,7 @@ public class Application {
             return;
         }
 
-        deviceController.init();
-
-        robot = new CRobot(deviceController);
+        robot.init();
 
         final Server server = new Server();
         final BluetoothServer bts = new BluetoothServer();
@@ -64,13 +61,13 @@ public class Application {
                 lastDriveCommand = System.currentTimeMillis();
 
                 if (command.getCommand() == DriveCommand.COMMAND.FORWARD) {
-                    deviceController.getDriveController().drive(command.getSpeed());
+                    robot.getDriveController().drive(command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.BACKWARD) {
-                    deviceController.getDriveController().drive(command.getSpeed());
+                    robot.getDriveController().drive(command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.LEFT_TURN) {
-                    deviceController.getDriveController().turnLeft(command.getSpeed());
+                    robot.getDriveController().turnLeft(command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.RIGHT_TURN) {
-                    deviceController.getDriveController().turnRight(command.getSpeed());
+                    robot.getDriveController().turnRight(command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.PROGRAM_START && !robot.isRunning()) {
                     robot.start();
                 } else if (command.getCommand() == DriveCommand.COMMAND.PROGRAM_STOP && robot.isRunning()) {
