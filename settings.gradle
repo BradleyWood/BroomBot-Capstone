@@ -1,2 +1,2 @@
 
-include ':crobot-core', ':crobot-app', ':crobot-simulator', ':crobot-drivers', ':crobot-communication', ':crobot-deploy'
+include ':crobot-core', ':android-app', ':crobot-app', ':crobot-simulator', ':crobot-drivers', ':crobot-communication', ':crobot-deploy'
