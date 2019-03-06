@@ -17,7 +17,10 @@ public abstract @Data class NavigationTask implements RobotTask {
         this(100, TimeUnit.MILLISECONDS);
     }
 
-    public abstract boolean activate(final @NonNull CRobot cRobot);
+    public void init(final @NonNull CRobot robot) {
+    }
+
+    public abstract boolean activate(final @NonNull CRobot robot);
 
     public abstract boolean canInterrupt();
 

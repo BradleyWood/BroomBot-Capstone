@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 public class Application {
 
-    private static final CRobot robot = new CRobot(AdafruitDCMotor.MOTOR1, AdafruitDCMotor.MOTOR2, new X4Lidar());
+    private static final CRobot robot = new CRobot(AdafruitDCMotor.MOTOR1, AdafruitDCMotor.MOTOR2, AdafruitDCMotor.MOTOR3, new X4Lidar());
     private static long lastDriveCommand = 0;
 
     public static void main(String[] args) throws InterruptedException, TimeoutException {

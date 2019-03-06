@@ -17,8 +17,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public @Data
-class CRobot {
+public @Data class CRobot {
 
     public static final int MAP_SIZE_PIXELS = 1000;
     public static final int MAP_SIZE_METERS = 20;
@@ -31,12 +30,13 @@ class CRobot {
 
     private final Motor leftMotor;
     private final Motor rightMotor;
+    private final Motor brushMotor;
     private final Lidar lidar;
     private Drive driveController;
 
     private boolean initialized = false;
 
-    private final List<PeriodicRobotTask> periodicTasks = Arrays.asList(ScanTask.INSTANCE, SLAMTask.INSTANCE);
+    private final List<PeriodicRobotTask> periodicTasks = Arrays.asList(ScanTask.INSTANCE, SLAMTask.INSTANCE, CleanTask.INSTANCE);
     private final List<NavigationTask> navTasks = Arrays.asList(ForwardTask.INSTANCE, CollisionTask.INSTANCE);
     private final Lock lock = new ReentrantLock();
     private NavigationTask currentTask = null;
@@ -72,6 +72,7 @@ class CRobot {
         );
 
         for (final NavigationTask navTask : navTasks) {
+            navTask.init(this);
             executorService.scheduleAtFixedRate(() -> {
                 if ((currentTask == null || currentTask.canInterrupt() || navTaskFuture.isDone()) && navTask.activate(this)) {
                     try {
@@ -92,6 +93,10 @@ class CRobot {
                 }
             }, 0, navTask.getPollingRate(), navTask.getTimeUnit());
         }
+    }
+
+    public double getTheta() {
+        return rmhcslam.getpos().theta_degrees;
     }
 
     public int getX() {
@@ -147,6 +152,7 @@ class CRobot {
 
         leftMotor.stop();
         rightMotor.stop();
+        brushMotor.stop();
         lidar.stopRotation();
     }
 
