@@ -2,9 +2,6 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: "org.hidetake.ssh"
 
-group = 'ca.uoit.crobot'
-version = '0.0.1-SNAPSHOT'
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -74,7 +71,7 @@ runApp << {
             forwardLocalPort port: 9999, hostPort: 9999
             put from: "${buildDir}/libs/crobot-app-${version}.jar", into: '.'
 //            put from: "D:\\IdeaProjects\\crobot\\crobot-app\\src\\main\\resources\\libbluecove_arm.so", into: '.'
-            execute "java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999 -jar crobot-app-${version}.jar"
+            execute "sudo java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9999 -jar crobot-app-${version}.jar"
         }
     }
 }

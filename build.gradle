@@ -1,4 +1,7 @@
 subprojects { p ->
+    group = 'ca.uoit.crobot'
+    version = '0.5'
+
     p.buildscript {
         ext.kotlin_version = "1.3.11"
 
