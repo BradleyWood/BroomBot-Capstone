@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_connect"
+        android:icon="@android:drawable/ic_lock_idle_charging"
+        android:title="@string/title_connect" />
+
+    <item
+        android:id="@+id/navigation_maps"
+        android:icon="@android:drawable/ic_menu_mapmode"
+        android:title="@string/title_maps" />
+
+    <item
+        android:id="@+id/navigation_rc"
+        android:icon="@android:drawable/ic_menu_more"
+        android:title="@string/title_rc" />
+
+</menu>
