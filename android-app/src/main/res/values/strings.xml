@@ -13,5 +13,20 @@
     <string name="title_activity_lidar_data">LidarData</string>
     <string name="title_activity_rcstart_stop">RCStartStop</string>
     <string name="title_activity_map_data">MapData</string>
-    <string name="control_the_robot">Control the Robot</string>
+
+    <string name="title_activity_main_ui">mainUI</string>
+    <string name="title_activity_connect_device_ui">connectUI</string>
+    <string name="title_activity_maps_ui">mapsUI</string>
+    <string name="title_activity_rc_ui">rcUI</string>
+    <string name="title_activity_settings_ui">settingsUI</string>
+    <string name="title_connect">Connect</string>
+    <string name="title_maps">Maps</string>
+    <string name="title_rc">RC</string>
+    <string name="settings_button">Settings</string>
+    <string name="label">Label</string>
+    <string name="clean_button">Clean</string>
+    <string name="back_button">Home</string>
+    <string name="map">Map</string>
+    <string name="total_area">Total Area (sq ft)</string>
+    <string name="control_the_robot">Control the robot</string>
 </resources>
