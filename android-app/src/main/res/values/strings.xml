@@ -29,4 +29,5 @@
     <string name="map">Map</string>
     <string name="total_area">Total Area (sq ft)</string>
     <string name="control_the_robot">Control the robot</string>
+    <string name="begin_cleaning">Press to begin cleaning</string>
 </resources>

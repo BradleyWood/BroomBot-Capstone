@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".mainUI">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/updateText"
@@ -53,11 +52,11 @@
 
     <ImageView
         android:id="@+id/label"
-        android:contentDescription="@string/label"
         android:layout_width="350dp"
         android:layout_height="84dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:contentDescription="@string/label"
         android:src="@drawable/broombot"
         app:layout_constraintBottom_toTopOf="@+id/seperator1"
         app:layout_constraintEnd_toEndOf="parent"

@@ -22,14 +22,6 @@ public class DeviceSelectionFragment extends Fragment {
     public DeviceSelectionFragment() {
     }
 
-    public static DeviceSelectionFragment newInstance() {
-        DeviceSelectionFragment fragment = new DeviceSelectionFragment();
-        Bundle args = new Bundle();
-
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public void setRefreshing(final boolean refreshing) {
         getActivity().runOnUiThread(() -> swipeRefreshLayout.setRefreshing(refreshing));
     }

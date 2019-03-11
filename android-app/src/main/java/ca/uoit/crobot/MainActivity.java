@@ -7,7 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.design.widget.TabLayout;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,15 +23,14 @@ import java.util.UUID;
 
 import ca.uoit.crobot.event.ConnectionListener;
 import ca.uoit.crobot.fragments.DeviceSelectionFragment;
-import ca.uoit.crobot.fragments.LidarFragment;
+import ca.uoit.crobot.fragments.MainFragment;
 import ca.uoit.crobot.fragments.MapFragment;
 import ca.uoit.crobot.fragments.RCFragment;
-import ca.uoit.crobot.fragments.SettingsFragment;
-import ca.uoit.crobot.adaptors.TabPageAdaptor;
 import ca.uoit.crobot.messages.*;
 
 public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFragmentInteractionListener,
-        DeviceSelectionFragment.OnDeviceSelectionInteractionListener, LidarFragment.OnLidarDataInteractionListener, ConnectionListener {
+        ConnectionListener, DeviceSelectionFragment.OnDeviceSelectionInteractionListener,
+        MainFragment.OnMainFragmentInteractionListener {
 
     private static final String ROBOT_UUID = "396badb4-1837-11e9-ab14-d663bd873d93";
 
@@ -43,48 +44,28 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final AppViewPager viewPager = findViewById(R.id.view_container);
-        final TabPageAdaptor tpa = new TabPageAdaptor(getSupportFragmentManager());
+        deviceSelectionFragment = new DeviceSelectionFragment();
 
-        deviceSelectionFragment = DeviceSelectionFragment.newInstance();
+        final MainFragment mainFragment = new MainFragment();
+        final MapFragment mapsFragment = new MapFragment();
+        final RCFragment rcFragment = new RCFragment();
 
-        final RCFragment rcFragment = RCFragment.newInstance();
-        final MapFragment mapData = MapFragment.newInstance();
-        final SettingsFragment settings = SettingsFragment.newInstance();
-        final LidarFragment lidarFragment = LidarFragment.newInstance();
+        displayFragment(mainFragment);
 
-        tpa.addTab(getString(ca.uoit.crobot.R.string.rc), rcFragment);
-        tpa.addTab("Connect", deviceSelectionFragment);
-        tpa.addTab("Maps", mapData);
-        tpa.addTab("Lidar", lidarFragment);
-//        tpa.addTab("SettingsFragment", settings);
-
-        viewPager.setAdapter(tpa);
-        viewPager.setEnableSwipe(false);
-
-        final TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-
-        new Thread(() -> {
-            while (true) {
-                try {
-                    if (lidarFragment.isVisible() && connection != null) {
-                        final LidarReply reply = connection.send(new LidarRequest());
-                        runOnUiThread(() -> lidarFragment.update(reply.getAngles(), reply.getRanges()));
-                    } else if (mapData.isVisible() && connection != null) {
-                        final MapReply reply = connection.send(new MapRequest());
-                        final byte[] map = reply.getMap();
-
-                        if (map != null && map.length > 0) {
-                            runOnUiThread(() -> mapData.update(reply.getMAP_SIZE_PIXELS(), reply.getMap()));
-                        }
-                    } else {
-                        Thread.sleep(500);
-                    }
-                } catch (Exception ignored) {
-                }
+        final BottomNavigationView navView = findViewById(R.id.navigation);
+        navView.setOnNavigationItemSelectedListener(menuItem -> {
+            if (menuItem.getItemId() == R.id.navigation_maps) {
+                displayFragment(mapsFragment);
+            } else if (menuItem.getItemId() == R.id.navigation_rc) {
+                displayFragment(rcFragment);
+            } else if (menuItem.getItemId() == R.id.navigation_connect) {
+                displayFragment(deviceSelectionFragment);
+            } else {
+                return false;
             }
-        }).start();
+
+            return true;
+        });
     }
 
     @Override
@@ -203,35 +184,23 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
         }
     }
 
-    @Override
-    public void onMoveJoystick(int angle, int strength) {
-        int speed = (int) (strength * 0.4f + 0.5);
-        final DriveCommand.COMMAND command;
-
-        if (angle > 45 && angle < 135) {
-            // forward
-            command = DriveCommand.COMMAND.FORWARD;
-        } else if (angle >= 135 && angle < 135 + 90) {
-            // left
-            command = DriveCommand.COMMAND.LEFT_TURN;
-        } else if (angle >= 225 && angle < 315) {
-            // back
-            command = DriveCommand.COMMAND.BACKWARD;
-            speed = -speed;
-        } else {
-            // right
-            command = DriveCommand.COMMAND.RIGHT_TURN;
+    private <T> T sendRequest(final Request request) {
+        if (connection != null) {
+            try {
+                return (T) connection.send(request);
+            } catch (IOException e) {
+            }
         }
 
+        return null;
+    }
+
+    private void sendMessage(final Message message) {
         if (connection != null) {
-            int finalSpeed = speed;
-            new Thread(() -> {
-                try {
-                    connection.send(new DriveCommand(finalSpeed, command));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+            try {
+                connection.send(message);
+            } catch (IOException ignored) {
+            }
         }
     }
 
@@ -242,11 +211,37 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 
     @Override
     public void disconnected(final Connection connection) {
-        Log.d("BT", "Disconnected");
         runOnUiThread(() -> {
             deviceSelectionFragment.setDisconnected();
             Toast.makeText(this, ca.uoit.crobot.R.string.disconnected, Toast.LENGTH_SHORT).show();
             deviceAddress = null;
         });
+    }
+
+    private void displayFragment(final Fragment fragment) {
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentContainer, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    @Override
+    public void onLeft() {
+        sendMessage(new DriveCommand(22, DriveCommand.COMMAND.LEFT_TURN));
+    }
+
+    @Override
+    public void onRight() {
+        sendMessage(new DriveCommand(22, DriveCommand.COMMAND.RIGHT_TURN));
+    }
+
+    @Override
+    public void onForward() {
+        sendMessage(new DriveCommand(30, DriveCommand.COMMAND.FORWARD));
+    }
+
+    @Override
+    public void onBackward() {
+        sendMessage(new DriveCommand(30, DriveCommand.COMMAND.BACKWARD));
     }
 }
