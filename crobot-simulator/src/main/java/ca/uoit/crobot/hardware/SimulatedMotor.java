@@ -52,6 +52,12 @@ public @Data class SimulatedMotor extends Motor implements SimulationEntity {
     }
 
     @Override
+    public double getRate() {
+        // TODO: Implement rate for simulated motors
+        return 0;
+    }
+
+    @Override
     public void zero() {
         counter = 0;
     }

@@ -27,7 +27,6 @@ public class Drive implements Runnable {
     private double yDistance = 0;
     private double angle = 0;
 
-
     // Last time the PoseChange was calculated
     private long lastPoseChangeTime = System.currentTimeMillis();
 
@@ -64,6 +63,41 @@ public class Drive implements Runnable {
     }
 
     /**
+     * Drive forwards at the given speed until it drives a certain distance
+     *
+     * @param speed The speed to drive at
+     * @param millimeters The distance to drive in millimeters
+     */
+    public void driveToDistance(int speed, double millimeters) {
+
+        double distance_enc = millimeters * ENCODER_COUNTS_PER_MILLIMETER;
+
+        int leftStartCount = leftMotor.getCount();
+        int rightStartCount = rightMotor.getCount();
+
+        leftMotor.setSpeed(speed);
+        rightMotor.setSpeed(speed);
+
+        if (speed == 0) {
+            driving = false;
+            return;
+        }
+
+        dir = Direction.STRAIGHT;
+        start();
+
+        while(distance_enc < (leftMotor.getCount() - leftStartCount)
+                && distance_enc < (rightMotor.getCount() - rightStartCount)) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
+        stop();
+    }
+
+    /**
      * Turn left at the given speed
      *
      * @param speed The speed to turn at
@@ -82,6 +116,41 @@ public class Drive implements Runnable {
     }
 
     /**
+     * Turn left at the given speed until a certain angle is reached
+     *
+     * @param speed The speed to drive at
+     * @param angle The angle to turn to
+     */
+    public void turnLeftToAngle(int speed, double angle) {
+
+        double distance_enc = angle * ENCODER_COUNTS_PER_DEGREE;
+
+        int leftStartCount = leftMotor.getCount();
+        int rightStartCount = rightMotor.getCount();
+
+        leftMotor.setSpeed(-speed);
+        rightMotor.setSpeed(speed);
+
+        if (speed == 0) {
+            driving = false;
+            return;
+        }
+
+        dir = Direction.STRAIGHT;
+        start();
+
+        while(distance_enc < (leftMotor.getCount() - leftStartCount)
+                && distance_enc < (rightMotor.getCount() - rightStartCount)) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
+        stop();
+    }
+
+    /**
      * Turn right at the given speed
      *
      * @param speed The speed to turn at
@@ -97,6 +166,41 @@ public class Drive implements Runnable {
 
         dir = Direction.RIGHT;
         start();
+    }
+
+    /**
+     * Turn right at the given speed until a certain angle is reached
+     *
+     * @param speed The speed to drive at
+     * @param angle The angle to turn to
+     */
+    public void turnRightToAngle(int speed, double angle) {
+
+        double distance_enc = angle * ENCODER_COUNTS_PER_DEGREE;
+
+        int leftStartCount = leftMotor.getCount();
+        int rightStartCount = rightMotor.getCount();
+
+        leftMotor.setSpeed(speed);
+        rightMotor.setSpeed(-speed);
+
+        if (speed == 0) {
+            driving = false;
+            return;
+        }
+
+        dir = Direction.STRAIGHT;
+        start();
+
+        while(distance_enc < (leftMotor.getCount() - leftStartCount)
+                && distance_enc < (rightMotor.getCount() - rightStartCount)) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
+        stop();
     }
 
     /**

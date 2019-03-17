@@ -20,6 +20,7 @@ public class AdafruitDCMotor extends Motor {
     private final int encoderPhaseB;
 
     private final AtomicInteger counter = new AtomicInteger();
+    private double rate = 0;
     private int speed = 0;
 
     private AdafruitDCMotor(final int pwnPin, final int inputA, final int inputB, final int encoderPhaseA, final int encoderPhaseB) {
@@ -75,6 +76,11 @@ public class AdafruitDCMotor extends Motor {
     }
 
     @Override
+    public double getRate() {
+        return rate;
+    }
+
+    @Override
     public void zero() {
         counter.set(0);
     }
@@ -89,6 +95,26 @@ public class AdafruitDCMotor extends Motor {
                 listeners.forEach(l -> l.onMove(count));
             });
         }
+
+        new Thread(() -> {
+            long prevTime = 0;
+            int prevCount = 0;
+
+            while(true) {
+                long currentTime = System.currentTimeMillis();
+                long deltaT = prevTime - currentTime;
+
+                rate = counter.get() - prevCount;
+
+                prevCount = counter.get();
+                prevTime = currentTime;
+
+                try {
+                    Thread.sleep(25);
+                } catch (InterruptedException e) {
+                }
+            }
+        }).start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
