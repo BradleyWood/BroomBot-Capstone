@@ -14,10 +14,10 @@ public class Drive implements Runnable {
     private Thread tracker;
 
     // Constant for converting millimeters and encoder counts
-    private static final double ENCODER_COUNTS_PER_MILLIMETER = 2.0362962651058991957556107625584;
+    private static final double ENCODER_COUNTS_PER_MILLIMETER = 3.6592;
 
     // Constant for converting degrees and encoder counts
-    private static final double ENCODER_COUNTS_PER_DEGREE = 8.2;
+    private static final double ENCODER_COUNTS_PER_DEGREE = 7.5925; //8.2
 
     // Whether the robot is currently driving
     private boolean driving = false;
@@ -34,6 +34,9 @@ public class Drive implements Runnable {
     private final Motor leftMotor;
     private final Motor rightMotor;
 
+    private final PID leftPID;
+    private final PID rightPID;
+
     public void init() {
         leftMotor.init();
         rightMotor.init();
@@ -42,6 +45,9 @@ public class Drive implements Runnable {
     public Drive(Motor leftMotor, Motor rightMotor) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
+
+        leftPID = new PID(leftMotor);
+        rightPID = new PID(rightMotor);
     }
 
     /**
@@ -63,31 +69,38 @@ public class Drive implements Runnable {
     }
 
     /**
-     * Drive forwards at the given speed until it drives a certain distance
+     * Drive forwards at the given rate
      *
-     * @param speed The speed to drive at
+     * @param rate The rate to drive motors at (range is approximately -70 to 70)
+     */
+    public void driveRate(double rate) {
+        leftPID.setSetpoint(rate);
+        rightPID.setSetpoint(rate);
+
+        dir = Direction.STRAIGHT;
+    }
+
+    /**
+     * Drive forwards at the given rate until it drives a certain distance
+     *
+     * @param rate The rate to drive motors at (range is approximately -70 to 70)
      * @param millimeters The distance to drive in millimeters
      */
-    public void driveToDistance(int speed, double millimeters) {
+    public void driveToDistance(int rate, double millimeters) {
 
         double distance_enc = millimeters * ENCODER_COUNTS_PER_MILLIMETER;
 
         int leftStartCount = leftMotor.getCount();
         int rightStartCount = rightMotor.getCount();
 
-        leftMotor.setSpeed(speed);
-        rightMotor.setSpeed(speed);
-
-        if (speed == 0) {
-            driving = false;
-            return;
-        }
+        leftPID.setSetpoint(rate);
+        rightPID.setSetpoint(rate);
 
         dir = Direction.STRAIGHT;
         start();
 
-        while(distance_enc < (leftMotor.getCount() - leftStartCount)
-                && distance_enc < (rightMotor.getCount() - rightStartCount)) {
+        while(distance_enc > (leftMotor.getCount() - leftStartCount)
+                && distance_enc > (rightMotor.getCount() - rightStartCount)) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {
@@ -116,31 +129,26 @@ public class Drive implements Runnable {
     }
 
     /**
-     * Turn left at the given speed until a certain angle is reached
+     * Turn left at the given rate until a certain angle is reached
      *
-     * @param speed The speed to drive at
+     * @param rate The rate to drive motors at (range is approximately -70 to 70)
      * @param angle The angle to turn to
      */
-    public void turnLeftToAngle(int speed, double angle) {
+    public void turnLeftToAngle(int rate, double angle) {
 
         double distance_enc = angle * ENCODER_COUNTS_PER_DEGREE;
 
         int leftStartCount = leftMotor.getCount();
         int rightStartCount = rightMotor.getCount();
 
-        leftMotor.setSpeed(-speed);
-        rightMotor.setSpeed(speed);
-
-        if (speed == 0) {
-            driving = false;
-            return;
-        }
+        leftPID.setSetpoint(-rate);
+        rightPID.setSetpoint(rate);
 
         dir = Direction.STRAIGHT;
         start();
 
-        while(distance_enc < (leftMotor.getCount() - leftStartCount)
-                && distance_enc < (rightMotor.getCount() - rightStartCount)) {
+        while(distance_enc > (leftMotor.getCount() - leftStartCount)
+                && distance_enc > (rightMotor.getCount() - rightStartCount)) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {
@@ -169,31 +177,26 @@ public class Drive implements Runnable {
     }
 
     /**
-     * Turn right at the given speed until a certain angle is reached
+     * Turn right at the given rate until a certain angle is reached
      *
-     * @param speed The speed to drive at
+     * @param rate The rate to drive motors at (range is approximately -70 to 70)
      * @param angle The angle to turn to
      */
-    public void turnRightToAngle(int speed, double angle) {
+    public void turnRightToAngle(int rate, double angle) {
 
         double distance_enc = angle * ENCODER_COUNTS_PER_DEGREE;
 
         int leftStartCount = leftMotor.getCount();
         int rightStartCount = rightMotor.getCount();
 
-        leftMotor.setSpeed(speed);
-        rightMotor.setSpeed(-speed);
-
-        if (speed == 0) {
-            driving = false;
-            return;
-        }
+        leftPID.setSetpoint(rate);
+        rightPID.setSetpoint(-rate);
 
         dir = Direction.STRAIGHT;
         start();
 
-        while(distance_enc < (leftMotor.getCount() - leftStartCount)
-                && distance_enc < (rightMotor.getCount() - rightStartCount)) {
+        while(distance_enc > (leftMotor.getCount() - leftStartCount)
+                && distance_enc > (rightMotor.getCount() - rightStartCount)) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {
@@ -207,6 +210,9 @@ public class Drive implements Runnable {
      * Stop the motors and the tracker thread
      */
     public void stop() {
+        leftPID.stop();
+        rightPID.stop();
+
         leftMotor.stop();
         rightMotor.stop();
         driving = false;
