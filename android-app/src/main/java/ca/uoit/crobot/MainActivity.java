@@ -8,11 +8,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -26,6 +34,7 @@ import ca.uoit.crobot.fragments.DeviceSelectionFragment;
 import ca.uoit.crobot.fragments.MainFragment;
 import ca.uoit.crobot.fragments.MapFragment;
 import ca.uoit.crobot.fragments.RCFragment;
+import ca.uoit.crobot.fragments.SettingsFragment;
 import ca.uoit.crobot.messages.*;
 
 public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFragmentInteractionListener,
@@ -49,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
         final MainFragment mainFragment = new MainFragment();
         final MapFragment mapsFragment = new MapFragment();
         final RCFragment rcFragment = new RCFragment();
+        final SettingsFragment settingsFragment = new SettingsFragment();
 
         displayFragment(mainFragment);
 
@@ -60,11 +70,22 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
                 displayFragment(rcFragment);
             } else if (menuItem.getItemId() == R.id.navigation_connect) {
                 displayFragment(deviceSelectionFragment);
+            } else if (menuItem.getItemId() == R.id.navigation_settings) {
+                displayFragment(settingsFragment);
             } else {
                 return false;
             }
 
             return true;
+        });
+
+        ImageView home = (ImageView) findViewById(R.id.homeButton);
+
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayFragment((mainFragment));
+            }
         });
     }
 
@@ -228,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     @Override
     public void onLeft() {
         sendMessage(new DriveCommand(22, DriveCommand.COMMAND.LEFT_TURN));
+
     }
 
     @Override
@@ -243,5 +265,13 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     @Override
     public void onBackward() {
         sendMessage(new DriveCommand(30, DriveCommand.COMMAND.BACKWARD));
+    }
+
+    public void setBattery(final int percentage) {
+        final ProgressBar progressBar = (ProgressBar)findViewById (R.id.battery);
+        progressBar.setProgress(percentage);
+        final TextView textview = (TextView)findViewById (R.id.batteryText);
+        textview.setText(String.format("%d", percentage));
+
     }
 }

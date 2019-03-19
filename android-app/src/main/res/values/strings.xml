@@ -22,7 +22,8 @@
     <string name="title_connect">Connect</string>
     <string name="title_maps">Maps</string>
     <string name="title_rc">RC</string>
-    <string name="settings_button">Settings</string>
+    <string name="title_settings">Settings</string>"
+    <string name="home_button">Home</string>
     <string name="label">Label</string>
     <string name="clean_button">Clean</string>
     <string name="back_button">Home</string>

@@ -10,14 +10,14 @@
         android:id="@+id/updateText"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="50dp"
         android:fontFamily="sans-serif-black"
         android:text="Download Update"
         android:textAlignment="center"
         android:textColor="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/seperator1"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/uploadData" />
 
     <ImageButton
         android:id="@+id/backButton"
@@ -58,24 +58,10 @@
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/label"
         android:src="@drawable/broombot"
-        app:layout_constraintBottom_toTopOf="@+id/seperator1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.001" />
-
-    <View
-        android:id="@+id/seperator1"
-        android:layout_width="350dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="15dp"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintBottom_toTopOf="@+id/navigation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/seperator2"
@@ -147,7 +133,7 @@
         android:layout_width="77dp"
         android:layout_height="39dp"
         android:layout_marginStart="30dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginTop="35dp"
         android:background="@color/design_default_color_primary"
         android:fontFamily="sans-serif-black"
         android:text="Update"
@@ -155,7 +141,7 @@
         android:textColor="@android:color/white"
         android:textSize="10sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/seperator1"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/uploadSwitch" />
 
 </android.support.constraint.ConstraintLayout>

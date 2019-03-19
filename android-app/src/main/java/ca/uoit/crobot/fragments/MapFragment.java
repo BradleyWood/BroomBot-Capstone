@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import ca.uoit.crobot.R;
 import ca.uoit.crobot.components.MapView;
@@ -34,7 +36,13 @@ public class MapFragment extends Fragment {
                              final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_map_view, container, false);
 
-        // todo;
+        ImageView map = view.findViewById(R.id.map);
+
+        //SET UP MAP IMAGE HERE
+
+        TextView area = view.findViewById(R.id.area);
+
+        area.setText(""); //SET AREA HERE
 
         return view;
     }
