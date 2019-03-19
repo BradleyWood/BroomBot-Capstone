@@ -34,6 +34,13 @@ public abstract class Motor implements Device {
     public abstract int getCount();
 
     /**
+     * Returns the rate in Encoder Counts / second that the wheels are turning
+     *
+     * @return The Rate the wheels are turning
+     */
+    public abstract double getRate();
+
+    /**
      * Resets the count of the encoder to zero
      */
     public abstract void zero();
