@@ -65,9 +65,9 @@ public class Application {
                 } else if (command.getCommand() == DriveCommand.COMMAND.BACKWARD) {
                     robot.getDriveController().drive(command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.LEFT_TURN) {
-                    robot.getDriveController().turnLeft(command.getSpeed());
+                    robot.getDriveController().turn(-command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.RIGHT_TURN) {
-                    robot.getDriveController().turnRight(command.getSpeed());
+                    robot.getDriveController().turn(command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.PROGRAM_START && !robot.isRunning()) {
                     robot.start();
                 } else if (command.getCommand() == DriveCommand.COMMAND.PROGRAM_STOP && robot.isRunning()) {

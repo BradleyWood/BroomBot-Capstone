@@ -30,9 +30,9 @@ public final class CollisionTask extends NavigationTask {
     public void run(final @NonNull CRobot robot) {
         while (decision != DECISION.NOTHING) {
             if (decision == DECISION.RIGHT) {
-                robot.getDriveController().turnRight(22);
+                robot.getDriveController().turn(22);
             } else {
-                robot.getDriveController().turnLeft(22);
+                robot.getDriveController().turn(-22);
             }
 
             makeDecision(robot);

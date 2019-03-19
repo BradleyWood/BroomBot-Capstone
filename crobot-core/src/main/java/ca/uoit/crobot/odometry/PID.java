@@ -61,7 +61,6 @@ public class PID {
 
             stop();
         });
-
     }
 
     public void setSetpoint(double setpoint) {
