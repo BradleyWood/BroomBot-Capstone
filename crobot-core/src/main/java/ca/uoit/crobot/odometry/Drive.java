@@ -123,8 +123,8 @@ public class Drive implements Runnable {
      * @param speed The speed to turn at (-100 to 100)
      */
     public void turn(int speed) {
-        leftMotor.setSpeed(-speed);
-        rightMotor.setSpeed(speed);
+        leftMotor.setSpeed(speed);
+        rightMotor.setSpeed(-speed);
 
         if (speed == 0) {
             driving = false;
