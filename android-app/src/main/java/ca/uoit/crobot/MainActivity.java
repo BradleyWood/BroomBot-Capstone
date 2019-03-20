@@ -8,18 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,8 +74,9 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
             return true;
         });
 
-        ImageView home = (ImageView) findViewById(R.id.homeButton);
+        ImageView home = findViewById(R.id.homeButton);
 
+<<<<<<< HEAD
         home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 
         Button clean = (Button) findViewById(R.id.custom_button);
 
+=======
+        home.setOnClickListener(v -> displayFragment((mainFragment)));
+>>>>>>> bd13cd0e4a26d4fc6a51a69b768767db2df5ac16
     }
 
     @Override
@@ -252,7 +251,6 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     @Override
     public void onLeft() {
         sendMessage(new DriveCommand(22, DriveCommand.COMMAND.LEFT_TURN));
-
     }
 
     @Override
@@ -271,10 +269,10 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     }
 
     public void setBattery(final int percentage) {
-        final ProgressBar progressBar = (ProgressBar)findViewById (R.id.battery);
+        final ProgressBar progressBar = findViewById (R.id.battery);
         progressBar.setProgress(percentage);
-        final TextView textview = (TextView)findViewById (R.id.batteryText);
-        textview.setText(String.format("%d", percentage));
 
+        final TextView textview = findViewById (R.id.batteryText);
+        textview.setText(String.format("%d", percentage));
     }
 }

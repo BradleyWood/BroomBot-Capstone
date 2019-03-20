@@ -27,11 +27,15 @@ public class DeviceSelectionFragment extends Fragment {
     }
 
     public void addDevice(final String name, final String address) {
-        da.addDevice(name, address);
+        if (da != null) {
+            da.addDevice(name, address);
+        }
     }
 
     public void remove(final String address) {
-        da.remove(address);
+        if (da != null) {
+            da.remove(address);
+        }
     }
 
     public void setConnected(final String address) {
