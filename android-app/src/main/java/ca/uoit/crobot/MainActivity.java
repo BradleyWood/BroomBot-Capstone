@@ -87,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
                 displayFragment((mainFragment));
             }
         });
+
+        Button clean = (Button) findViewById(R.id.custom_button);
+
     }
 
     @Override
