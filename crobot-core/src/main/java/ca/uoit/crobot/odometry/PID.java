@@ -8,6 +8,8 @@ public class PID {
     private double setpoint = 0;
     private boolean running = false;
 
+    double totalError = 0;
+
     private final Thread pidThread;
 
     public PID(Motor motor) {
@@ -22,7 +24,6 @@ public class PID {
             double prevError = 0;
             double dError = 0;
             double error;
-            double totalError = 0;
 
             long now;
             long lastTime = System.currentTimeMillis();
@@ -65,6 +66,7 @@ public class PID {
 
     public void setSetpoint(double setpoint) {
         this.setpoint = setpoint;
+        this.totalError = 0;
 
         if(!running) {
             running = true;
