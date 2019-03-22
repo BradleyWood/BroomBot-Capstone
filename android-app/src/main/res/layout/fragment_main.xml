@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-black"
-        android:text="@string/begin_cleaning"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@android:color/darker_gray"
@@ -21,8 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Press to begin cleaning" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/custom_button"

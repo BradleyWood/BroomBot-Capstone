@@ -13,6 +13,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -43,6 +45,11 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     private String deviceAddress;
     private Connection connection;
 
+    private MainFragment mainFragment;
+    private MapFragment mapsFragment;
+    private RCFragment rcFragment;
+    private SettingsFragment settingsFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +57,12 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 
         deviceSelectionFragment = new DeviceSelectionFragment();
 
-        final MainFragment mainFragment = new MainFragment();
-        final MapFragment mapsFragment = new MapFragment();
-        final RCFragment rcFragment = new RCFragment();
-        final SettingsFragment settingsFragment = new SettingsFragment();
+        mainFragment = new MainFragment();
+        mapsFragment = new MapFragment();
+        rcFragment = new RCFragment();
+        settingsFragment = new SettingsFragment();
+
+        final ImageView home = findViewById(R.id.homeButton);
 
         displayFragment(mainFragment);
 
@@ -74,9 +83,6 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
             return true;
         });
 
-        ImageView home = findViewById(R.id.homeButton);
-
-<<<<<<< HEAD
         home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,12 +90,18 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
             }
         });
 
-        Button clean = (Button) findViewById(R.id.custom_button);
-
-=======
         home.setOnClickListener(v -> displayFragment((mainFragment)));
->>>>>>> bd13cd0e4a26d4fc6a51a69b768767db2df5ac16
-    }
+
+        mainFragment.fragmentLoadedListener = () -> {
+            if (connection == null) {
+                mainFragment.setButtonEnabled(false);
+                mainFragment.setCleaningText("Please Connect Device");
+            } else {
+                mainFragment.setButtonEnabled(true);
+                mainFragment.setCleaningText("Press to begin cleaning");
+            }
+        };
+     }
 
     @Override
     protected void onResume() {
@@ -230,10 +242,16 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     @Override
     public void connected(final Connection connection) {
         Log.d("BT", "Connected");
+
+        mainFragment.setButtonEnabled(true);
+        mainFragment.setCleaningText("Press to begin cleaning");
     }
 
     @Override
     public void disconnected(final Connection connection) {
+        mainFragment.setButtonEnabled(false);
+        mainFragment.setCleaningText("Please Connect Device");
+
         runOnUiThread(() -> {
             deviceSelectionFragment.setDisconnected();
             Toast.makeText(this, ca.uoit.crobot.R.string.disconnected, Toast.LENGTH_SHORT).show();
