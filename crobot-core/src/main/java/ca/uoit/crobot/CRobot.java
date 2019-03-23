@@ -9,6 +9,7 @@ import ca.uoit.crobot.task.NavigationTask;
 import ca.uoit.crobot.task.PeriodicRobotTask;
 import edu.wlu.cs.levy.breezyslam.algorithms.CoreSLAM;
 import edu.wlu.cs.levy.breezyslam.algorithms.RMHCSLAM;
+import edu.wlu.cs.levy.breezyslam.components.Position;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -19,8 +20,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public @Data class CRobot {
 
-    public static final int MAP_SIZE_PIXELS = 1000;
-    public static final int MAP_SIZE_METERS = 20;
+    public static final int MAP_SIZE_PIXELS = 700;
+    public static final int MAP_SIZE_METERS = 32;
 
     private ScheduledExecutorService executorService;
     private RMHCSLAM rmhcslam;
@@ -37,7 +38,7 @@ public @Data class CRobot {
     private boolean initialized = false;
 
     private final List<PeriodicRobotTask> periodicTasks = Arrays.asList(ScanTask.INSTANCE, SLAMTask.INSTANCE, CleanTask.INSTANCE);
-    private final List<NavigationTask> navTasks = Arrays.asList(ForwardTask.INSTANCE, CollisionTask.INSTANCE);
+    private final List<NavigationTask> navTasks = Arrays.asList(ForwardTask.INSTANCE, CollisionTask.INSTANCE, DriveTask.INSTANCE);
     private final Lock lock = new ReentrantLock();
     private NavigationTask currentTask = null;
     private Future navTaskFuture;
@@ -79,7 +80,6 @@ public @Data class CRobot {
                         if (lock.tryLock(50, TimeUnit.MILLISECONDS)) {
 
                             if (navTaskFuture != null) {
-                                navTaskFuture.cancel(true);
                                 while (!navTaskFuture.isDone()) ;
                             }
 
@@ -95,8 +95,8 @@ public @Data class CRobot {
         }
     }
 
-    public double getTheta() {
-        return rmhcslam.getpos().theta_degrees;
+    public Position getPosition() {
+        return rmhcslam.getpos();
     }
 
     public int getX() {
