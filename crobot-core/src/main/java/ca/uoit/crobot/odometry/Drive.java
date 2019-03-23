@@ -44,7 +44,7 @@ public class Drive implements Runnable {
         rightMotor.init();
     }
 
-    public Drive(Motor leftMotor, Motor rightMotor) {
+    public Drive(final Motor leftMotor, final Motor rightMotor) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
 
@@ -57,7 +57,7 @@ public class Drive implements Runnable {
      *
      * @param speed The speed to drive the robot at (-100 to 100)
      */
-    public void drive(int speed) {
+    public void drive(final int speed) {
         leftMotor.setSpeed(speed);
         rightMotor.setSpeed(speed);
 
@@ -75,9 +75,15 @@ public class Drive implements Runnable {
      *
      * @param speed The speed to drive the robot at (-100 to 100)
      */
-    public void drivePID(int speed) {
+    public void drivePID(final int speed) {
+        if (speed == 0) {
+            driving = false;
+            leftPID.stop();
+            rightPID.stop();
+            return;
+        }
 
-        double rate = (double) (100 / speed) * MAX_ENCODER_COUNTS_PER_TICK;
+        double rate = (speed / 100.0) * MAX_ENCODER_COUNTS_PER_TICK;
 
         leftPID.setSetpoint(rate);
         rightPID.setSetpoint(rate);
@@ -88,17 +94,17 @@ public class Drive implements Runnable {
     /**
      * Drive forwards at the given rate until it drives a certain distance using PIDs
      *
-     * @param speed The speed to drive the robot at (-100 to 100)
+     * @param speed       The speed to drive the robot at (-100 to 100)
      * @param millimeters The distance to drive in millimeters
      */
-    public void driveToDistance(int speed, double millimeters) {
+    public void driveToDistance(final int speed, final double millimeters) {
 
         double distance_enc = millimeters * ENCODER_COUNTS_PER_MILLIMETER;
 
         int leftStartCount = leftMotor.getCount();
         int rightStartCount = rightMotor.getCount();
 
-        double rate = (double) (100 / speed) * MAX_ENCODER_COUNTS_PER_TICK;
+        double rate = (speed / 100.0) * MAX_ENCODER_COUNTS_PER_TICK;
 
         leftPID.setSetpoint(rate);
         rightPID.setSetpoint(rate);
@@ -106,7 +112,7 @@ public class Drive implements Runnable {
         dir = Direction.STRAIGHT;
         start();
 
-        while(distance_enc > (leftMotor.getCount() - leftStartCount)
+        while (distance_enc > (leftMotor.getCount() - leftStartCount)
                 && distance_enc > (rightMotor.getCount() - rightStartCount)) {
             try {
                 Thread.sleep(10);
@@ -122,7 +128,7 @@ public class Drive implements Runnable {
      *
      * @param speed The speed to turn at (-100 to 100)
      */
-    public void turn(int speed) {
+    public void turn(final int speed) {
         leftMotor.setSpeed(speed);
         rightMotor.setSpeed(-speed);
 
@@ -131,7 +137,7 @@ public class Drive implements Runnable {
             return;
         }
 
-        if(speed < 0) {
+        if (speed < 0) {
             dir = Direction.LEFT;
         } else {
             dir = Direction.RIGHT;
@@ -145,19 +151,20 @@ public class Drive implements Runnable {
      *
      * @param speed The speed to turn at (-100 to 100)
      */
-    public void turnPID(int speed) {
-
-        double rate = (double) (100 / speed) * MAX_ENCODER_COUNTS_PER_TICK;
-
-        leftPID.setSetpoint(-rate);
-        rightPID.setSetpoint(rate);
-
+    public void turnPID(final int speed) {
         if (speed == 0) {
             driving = false;
+            leftPID.stop();
+            rightPID.stop();
             return;
         }
 
-        if(speed < 0) {
+        final double rate = (speed / 100.0) * MAX_ENCODER_COUNTS_PER_TICK;
+
+        leftPID.setSetpoint(rate);
+        rightPID.setSetpoint(-rate);
+
+        if (speed < 0) {
             dir = Direction.LEFT;
         } else {
             dir = Direction.RIGHT;
@@ -172,19 +179,18 @@ public class Drive implements Runnable {
      * @param speed The speed to turn at (-100 to 100)
      * @param angle The angle to turn to
      */
-    public void turnToAngle(int speed, double angle) {
+    public void turnToAngle(final int speed, final double angle) {
+        final double distance_enc = angle * ENCODER_COUNTS_PER_DEGREE;
 
-        double distance_enc = angle * ENCODER_COUNTS_PER_DEGREE;
+        final int leftStartCount = leftMotor.getCount();
+        final int rightStartCount = rightMotor.getCount();
 
-        int leftStartCount = leftMotor.getCount();
-        int rightStartCount = rightMotor.getCount();
-
-        double rate = (double) (100 / speed) * MAX_ENCODER_COUNTS_PER_TICK;
+        double rate = (speed / 100.0) * MAX_ENCODER_COUNTS_PER_TICK;
 
         leftPID.setSetpoint(-rate);
         rightPID.setSetpoint(rate);
 
-        if(rate < 0) {
+        if (rate < 0) {
             dir = Direction.LEFT;
         } else {
             dir = Direction.RIGHT;
@@ -192,7 +198,7 @@ public class Drive implements Runnable {
 
         start();
 
-        while(distance_enc > (leftMotor.getCount() - leftStartCount)
+        while (distance_enc > (leftMotor.getCount() - leftStartCount)
                 && distance_enc > (rightMotor.getCount() - rightStartCount)) {
             try {
                 Thread.sleep(10);
