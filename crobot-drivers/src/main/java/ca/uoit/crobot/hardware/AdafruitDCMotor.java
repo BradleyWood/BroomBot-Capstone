@@ -97,17 +97,12 @@ public class AdafruitDCMotor extends Motor {
         }
 
         new Thread(() -> {
-            long prevTime = 0;
             int prevCount = 0;
 
             while(true) {
-                long currentTime = System.currentTimeMillis();
-                long deltaT = currentTime - prevTime;
-
-                rate = (counter.get() - prevCount);// / (deltaT / 1000.0);
+                rate = (counter.get() - prevCount);
 
                 prevCount = counter.get();
-                prevTime = currentTime;
 
                 try {
                     Thread.sleep(25);

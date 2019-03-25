@@ -48,15 +48,37 @@ public class DriveTask extends NavigationTask {
     @Override
     public void run(final @NonNull CRobot robot) {
         try {
+            // TODO: Refresh map and targets inside the while loop?
             robot.mapRefresh();
             final List<Point> targets = getTargets(robot);
 
-            // todo;
+            while(!targets.isEmpty()) {
+                Point target = targets.get(0);
+                Position pos = robot.getPosition();
+
+                // Calculate the amount the robot needs to turn in degrees
+                double dTheta =  pos.theta_degrees + 180 * Math.atan2(target.x - pos.x_mm, pos.y_mm - target.y) / Math.PI;
+
+                // Normalize dTheta
+                if(Math.abs(dTheta) > 180) {
+                    dTheta = dTheta - (Math.signum(dTheta) * 360);
+                }
+
+                // Calculate the distance the robot has to travel
+                double distance = Math.sqrt(Math.pow(target.y - pos.y_mm, 2) + Math.pow(target.x - pos.x_mm, 2));
+
+                // Synchronous Drive methods
+                robot.getDriveController().turnToAngle(0, dTheta);
+                robot.getDriveController().driveToDistance(0, distance);
+
+                // Remove the target from the list
+                targets.remove(0);
+            }
+
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Marks the robots position as visited on the grid-map
