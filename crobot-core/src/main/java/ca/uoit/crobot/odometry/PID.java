@@ -50,7 +50,7 @@ public class PID {
                         speed = -100;
                     }
 
-                    System.out.println("Speed: " + speed + "\tcount: " + motor.getCount() + "\trate: " + motor.getRate() + "\terror: " + error + "\ttotal: " + totalError + "\tdError: " + dError);
+                    // System.out.println("Speed: " + speed + "\tcount: " + motor.getCount() + "\trate: " + motor.getRate() + "\terror: " + error + "\ttotal: " + totalError + "\tdError: " + dError);
 
                     motor.setSpeed(speed);
 
