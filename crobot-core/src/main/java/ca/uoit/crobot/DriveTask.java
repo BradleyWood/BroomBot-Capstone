@@ -21,7 +21,7 @@ public class DriveTask extends NavigationTask {
     private static final int ROBOT_RADIUS_MM = 120;
     private static final int TARGET_SPACING_MM = 100;
 
-    private static final int MM_PER_PIXEL = 5; // TODO: Figure out what this number should be
+    private static final double MM_PER_PIXEL = 45.714;
 
     private static final LinkedList<Position> targetPath = new LinkedList<>();
     private boolean[][] visited;
