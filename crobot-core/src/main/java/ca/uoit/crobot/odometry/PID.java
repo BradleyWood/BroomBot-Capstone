@@ -22,45 +22,54 @@ public class PID {
             double kd = 10;
 
             double prevError = 0;
-            double dError = 0;
+            double dError;
             double error;
 
             long now;
             long lastTime = System.currentTimeMillis();
 
-            while(running) {
-                now = System.currentTimeMillis();
-                double timeChange = (double) (now - lastTime);
+            while(true) {
+                if (running) {
+                    now = System.currentTimeMillis();
+                    double timeChange = (double) (now - lastTime);
 
-                if(setpoint > 0) {
-                    error = setpoint - motor.getRate();
+                    if (setpoint > 0) {
+                        error = setpoint - motor.getRate();
+                    } else {
+                        error = setpoint + motor.getRate();
+                    }
+
+                    totalError += error;
+                    dError = (error - prevError) / timeChange;
+
+                    int speed = (int) (kp * error + ki * totalError + kd * dError);
+
+                    if (speed > 100) {
+                        speed = 100;
+                    } else if (speed < -100) {
+                        speed = -100;
+                    }
+
+                    System.out.println("Speed: " + speed + "\tcount: " + motor.getCount() + "\trate: " + motor.getRate() + "\terror: " + error + "\ttotal: " + totalError + "\tdError: " + dError);
+
+                    motor.setSpeed(speed);
+
+                    lastTime = now;
+                    prevError = error;
+
+                    try {
+                        Thread.sleep(25);
+                    } catch (InterruptedException e) {
+                    }
                 } else {
-                    error = setpoint + motor.getRate();
-                }
-
-                totalError += error;
-                dError = (error - prevError) / timeChange;
-
-                int speed = (int) (kp * error + ki * totalError + kd * dError);
-
-                if(speed > 100) {
-                    speed = 100;
-                } else if(speed < -100) {
-                    speed = -100;
-                }
-
-                motor.setSpeed(speed);
-
-                lastTime = now;
-                prevError = error;
-
-                try {
-                    Thread.sleep(25);
-                } catch (InterruptedException e) {
+                    synchronized (this) {
+                        try {
+                            wait();
+                        } catch (InterruptedException e) {
+                        }
+                    }
                 }
             }
-
-            stop();
         });
     }
 
@@ -68,9 +77,20 @@ public class PID {
         this.setpoint = setpoint;
         this.totalError = 0;
 
+        System.out.println("Setpoint: " + setpoint);
+
         if(!running) {
             running = true;
-            pidThread.start();
+
+            System.out.println(pidThread.getState());
+
+            if(pidThread.getState() == Thread.State.NEW) {
+                pidThread.start();
+            } else if(pidThread.getState() == Thread.State.WAITING) {
+                synchronized (this) {
+                    notify();
+                }
+            }
         }
     }
 
