@@ -85,10 +85,10 @@ public class DriveTask extends NavigationTask {
         double normalizedDegrees = pos.theta_degrees - 360.0 * Math.floor((pos.theta_degrees + Math.PI) / 360.0);
 
         // Calculate the amount the robot needs to turn in degrees
-        double dTheta =  normalizedDegrees + 180 * Math.atan2(target.x - pos.x_mm, pos.y_mm - target.y) / Math.PI;
+        double dTheta = normalizedDegrees + 180 * Math.atan2(target.x - pos.x_mm, pos.y_mm - target.y) / Math.PI;
 
         // Normalize dTheta
-        if(Math.abs(dTheta) > 180) {
+        if (Math.abs(dTheta) > 180) {
             dTheta = dTheta - (Math.signum(dTheta) * 360);
         }
 
@@ -101,6 +101,11 @@ public class DriveTask extends NavigationTask {
         // Synchronous Drive methods
         robot.getDriveController().turnToAngle(20, dTheta);
         robot.getDriveController().driveToDistance(20, distance);
+    }
+
+    @Override
+    public void onInterrupt(final @NonNull CRobot cRobot) {
+
     }
 
     /**

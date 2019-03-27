@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
-public abstract @Data class NavigationTask implements RobotTask {
+public abstract @Data
+class NavigationTask implements RobotTask {
 
     private final int pollingRate;
     private final TimeUnit timeUnit;
@@ -24,4 +25,6 @@ public abstract @Data class NavigationTask implements RobotTask {
 
     public abstract boolean canInterrupt();
 
+    public void onInterrupt(final @NonNull CRobot cRobot) {
+    }
 }

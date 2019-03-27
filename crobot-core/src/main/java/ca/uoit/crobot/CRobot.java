@@ -78,8 +78,10 @@ public @Data class CRobot {
                 if ((currentTask == null || currentTask.canInterrupt() || navTaskFuture.isDone()) && navTask.activate(this)) {
                     try {
                         if (lock.tryLock(50, TimeUnit.MILLISECONDS)) {
+                            currentTask.onInterrupt(this);
 
                             if (navTaskFuture != null) {
+                                navTaskFuture.cancel(true);
                                 while (!navTaskFuture.isDone()) ;
                             }
 
