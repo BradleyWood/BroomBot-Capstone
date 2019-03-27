@@ -88,6 +88,11 @@ public class DriveTask extends NavigationTask {
         }
     }
 
+    @Override
+    public void onInterrupt(final @NonNull CRobot cRobot) {
+
+    }
+
     /**
      * Marks the robots position as visited on the grid-map
      *
