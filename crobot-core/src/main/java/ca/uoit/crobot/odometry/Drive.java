@@ -39,11 +39,6 @@ public class Drive implements Runnable {
     private final PID leftPID;
     private final PID rightPID;
 
-    public void init() {
-        leftMotor.init();
-        rightMotor.init();
-    }
-
     public Drive(final Motor leftMotor, final Motor rightMotor) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
@@ -198,8 +193,8 @@ public class Drive implements Runnable {
 
         start();
 
-        while (distance_enc > (leftMotor.getCount() - leftStartCount)
-                && distance_enc > (rightMotor.getCount() - rightStartCount)) {
+        while (Math.abs(distance_enc) > (leftMotor.getCount() - leftStartCount)
+                && Math.abs(distance_enc) > (rightMotor.getCount() - rightStartCount)) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {

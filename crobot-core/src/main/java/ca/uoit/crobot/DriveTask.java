@@ -5,6 +5,7 @@ import edu.wlu.cs.levy.breezyslam.components.Position;
 import lombok.NonNull;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,8 @@ public class DriveTask extends NavigationTask {
     private static final int TARGETING_RADIUS_MM = 2500;
     private static final int ROBOT_RADIUS_MM = 120;
     private static final int TARGET_SPACING_MM = 100;
+
+    private static final double MM_PER_PIXEL = 45.714;
 
     private static final LinkedList<Position> targetPath = new LinkedList<>();
     private boolean[][] visited;
@@ -48,12 +51,17 @@ public class DriveTask extends NavigationTask {
     @Override
     public void run(final @NonNull CRobot robot) {
         try {
-            // TODO: Refresh map and targets inside the while loop?
-            robot.mapRefresh();
-            final List<Point> targets = getTargets(robot);
+
+            final List<Point> targets = new ArrayList<>();// = getTargets(robot);
+            // TODO: Replace this test point with real values
+            targets.add(new Point(520, 520));
 
             while(!targets.isEmpty()) {
                 Point target = targets.get(0);
+                // Change target units to be in MM
+                target.x *= MM_PER_PIXEL;
+                target.y *= MM_PER_PIXEL;
+
                 Position pos = robot.getPosition();
 
                 // Calculate the amount the robot needs to turn in degrees
@@ -68,8 +76,8 @@ public class DriveTask extends NavigationTask {
                 double distance = Math.sqrt(Math.pow(target.y - pos.y_mm, 2) + Math.pow(target.x - pos.x_mm, 2));
 
                 // Synchronous Drive methods
-                robot.getDriveController().turnToAngle(0, dTheta);
-                robot.getDriveController().driveToDistance(0, distance);
+                robot.getDriveController().turnToAngle(20, dTheta);
+                robot.getDriveController().driveToDistance(20, distance);
 
                 // Remove the target from the list
                 targets.remove(0);
