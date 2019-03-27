@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
