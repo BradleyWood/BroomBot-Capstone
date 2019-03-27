@@ -34,6 +34,7 @@ public class Application {
         }
 
         robot.init();
+        robot.start();
 
         final Server server = new Server();
         final BluetoothServer bts = new BluetoothServer();

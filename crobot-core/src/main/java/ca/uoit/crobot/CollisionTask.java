@@ -28,6 +28,7 @@ public final class CollisionTask extends NavigationTask {
 
     @Override
     public void run(final @NonNull CRobot robot) {
+
         while (decision != DECISION.NOTHING) {
             if (decision == DECISION.RIGHT) {
                 robot.getDriveController().turn(22);

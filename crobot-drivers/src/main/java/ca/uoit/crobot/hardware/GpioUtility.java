@@ -4,11 +4,13 @@ import com.pi4j.io.gpio.*;
 
 public class GpioUtility {
 
+    private static final GpioController GPIO_FACTORY = GpioFactory.getInstance();
+
     public static GpioPinDigitalInput getDigitalInput(final int address) {
         final Pin pin = RaspiPin.getPinByAddress(address);
 
         if (pin != null)
-            return GpioFactory.getInstance().provisionDigitalInputPin(pin);
+            return GPIO_FACTORY.provisionDigitalInputPin(pin);
 
         throw new IllegalArgumentException("Pin at address=" + address + " not found");
     }
@@ -17,7 +19,7 @@ public class GpioUtility {
         final Pin pin = RaspiPin.getPinByAddress(address);
 
         if (pin != null)
-            return GpioFactory.getInstance().provisionDigitalOutputPin(pin);
+            return GPIO_FACTORY.provisionDigitalOutputPin(pin);
 
         throw new IllegalArgumentException("Pin at address=" + address + " not found");
     }
@@ -26,9 +28,9 @@ public class GpioUtility {
         for (final Pin pin : RaspiPin.allPins()) {
             if (pin.getAddress() == address) {
                 if (pin.getSupportedPinModes().contains(PinMode.PWM_OUTPUT)) {
-                    return GpioFactory.getInstance().provisionPwmOutputPin(pin);
+                    return GPIO_FACTORY.provisionPwmOutputPin(pin);
                 } else {
-                    return GpioFactory.getInstance().provisionSoftPwmOutputPin(pin);
+                    return GPIO_FACTORY.provisionSoftPwmOutputPin(pin);
                 }
             }
         }

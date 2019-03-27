@@ -107,8 +107,13 @@ public class Drive implements Runnable {
         dir = Direction.STRAIGHT;
         start();
 
-        while (distance_enc > (leftMotor.getCount() - leftStartCount)
-                && distance_enc > (rightMotor.getCount() - rightStartCount)) {
+        while (Math.abs(distance_enc) > (leftMotor.getCount() - leftStartCount)
+                && Math.abs(distance_enc) > (rightMotor.getCount() - rightStartCount)) {
+
+            if(Thread.interrupted()) {
+                break;
+            }
+
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {
@@ -195,6 +200,11 @@ public class Drive implements Runnable {
 
         while (Math.abs(distance_enc) > (leftMotor.getCount() - leftStartCount)
                 && Math.abs(distance_enc) > (rightMotor.getCount() - rightStartCount)) {
+
+            if(Thread.interrupted()) {
+                break;
+            }
+
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {

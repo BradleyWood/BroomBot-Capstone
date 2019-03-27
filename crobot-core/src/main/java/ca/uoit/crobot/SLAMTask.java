@@ -34,7 +34,7 @@ public class SLAMTask extends PeriodicRobotTask {
                 slamAlgorithm.update(getRangesInMillimeters(size, scan));
             }
 
-            System.out.println("Map Time: " + (System.currentTimeMillis() - start));
+            // System.out.println("Map Time: " + (System.currentTimeMillis() - start));
 
             lastScan = scan;
         }

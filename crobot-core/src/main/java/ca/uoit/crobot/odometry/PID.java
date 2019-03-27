@@ -62,6 +62,7 @@ public class PID {
                     } catch (InterruptedException e) {
                     }
                 } else {
+                    motor.stop();
                     synchronized (this) {
                         try {
                             wait();
@@ -77,16 +78,22 @@ public class PID {
         this.setpoint = setpoint;
         this.totalError = 0;
 
-        System.out.println("Setpoint: " + setpoint);
-
         if(!running) {
             running = true;
-
-            System.out.println(pidThread.getState());
 
             if(pidThread.getState() == Thread.State.NEW) {
                 pidThread.start();
             } else if(pidThread.getState() == Thread.State.WAITING) {
+                synchronized (this) {
+                    notify();
+                }
+            } else if(pidThread.getState() == Thread.State.BLOCKED
+                    || pidThread.getState() == Thread.State.RUNNABLE) {
+                // Thread is blocked or running, wait until it is waiting and then notify it
+                try {
+                    Thread.sleep(25);
+                } catch (InterruptedException e) {
+                }
                 synchronized (this) {
                     notify();
                 }

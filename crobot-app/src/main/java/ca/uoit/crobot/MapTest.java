@@ -18,7 +18,7 @@ import java.util.List;
 public class MapTest {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        final Socket socket = new Socket("raspberry-pi", 5000);
+        final Socket socket = new Socket("192.168.2.76", 5000);
         final Connection connection = new Connection(socket, socket.getInputStream(), socket.getOutputStream());
         new Thread(connection).start();
 
