@@ -17,7 +17,7 @@ public class Drive implements Runnable {
     private static final double ENCODER_COUNTS_PER_MILLIMETER = 3.6592; // Old value: 2.02
 
     // Constant for converting degrees and encoder counts
-    private static final double ENCODER_COUNTS_PER_DEGREE = 7.5925; // Old Value: 8.2
+    private static final double ENCODER_COUNTS_PER_DEGREE = 7.83; // Old Value: 8.2
 
     private static final double MAX_ENCODER_COUNTS_PER_TICK = 70;
 
@@ -92,7 +92,7 @@ public class Drive implements Runnable {
      * @param speed       The speed to drive the robot at (-100 to 100)
      * @param millimeters The distance to drive in millimeters
      */
-    public void driveToDistance(final int speed, final double millimeters) {
+    public void driveToDistance(final int speed, final double millimeters) throws InterruptedException {
 
         double distance_enc = millimeters * ENCODER_COUNTS_PER_MILLIMETER;
 
@@ -110,14 +110,7 @@ public class Drive implements Runnable {
         while (Math.abs(distance_enc) > (leftMotor.getCount() - leftStartCount)
                 && Math.abs(distance_enc) > (rightMotor.getCount() - rightStartCount)) {
 
-            if(Thread.interrupted()) {
-                break;
-            }
-
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ignored) {
-            }
+            Thread.sleep(10);
         }
 
         stop();
@@ -179,7 +172,7 @@ public class Drive implements Runnable {
      * @param speed The speed to turn at (-100 to 100)
      * @param angle The angle to turn to
      */
-    public void turnToAngle(final int speed, final double angle) {
+    public void turnToAngle(final int speed, final double angle) throws InterruptedException {
         final double distance_enc = angle * ENCODER_COUNTS_PER_DEGREE;
 
         final int leftStartCount = leftMotor.getCount();
@@ -201,14 +194,7 @@ public class Drive implements Runnable {
         while (Math.abs(distance_enc) > (leftMotor.getCount() - leftStartCount)
                 && Math.abs(distance_enc) > (rightMotor.getCount() - rightStartCount)) {
 
-            if(Thread.interrupted()) {
-                break;
-            }
-
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ignored) {
-            }
+            Thread.sleep(10);
         }
 
         stop();

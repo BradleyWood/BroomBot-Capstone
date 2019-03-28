@@ -35,8 +35,8 @@ public @Data class CRobot {
 
     private boolean initialized = false;
 
-    private final List<PeriodicRobotTask> periodicTasks = Arrays.asList(ScanTask.INSTANCE, SLAMTask.INSTANCE, CleanTask.INSTANCE);
-    private final List<NavigationTask> navTasks = Arrays.asList(DriveTask.INSTANCE, CollisionTask.INSTANCE);//, DropTask.INSTANCE);//ForwardTask.INSTANCE, CollisionTask.INSTANCE, DriveTask.INSTANCE);
+    private final List<PeriodicRobotTask> periodicTasks = Arrays.asList(ScanTask.INSTANCE); //, SLAMTask.INSTANCE, CleanTask.INSTANCE);
+    private final List<NavigationTask> navTasks = Arrays.asList(DriveTask.INSTANCE, CollisionTask.INSTANCE, DropTask.INSTANCE);
     private final Lock lock = new ReentrantLock();
     private NavigationTask currentTask = null;
     private Future navTaskFuture;
@@ -74,6 +74,7 @@ public @Data class CRobot {
             navTask.init(this);
             executorService.scheduleAtFixedRate(() -> {
 
+                System.out.println("Running");
                 if (((currentTask == null || currentTask.canInterrupt() || navTaskFuture.isDone()))
                         && navTask.activate(this) && (navTaskFuture == null || navTaskFuture.isDone() || navTask != currentTask)) {
                     try {

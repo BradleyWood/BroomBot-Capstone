@@ -13,6 +13,9 @@ public class PID {
     private final Thread pidThread;
 
     public PID(Motor motor) {
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
+
         this.motor = motor;
 
         pidThread = new Thread(() -> {

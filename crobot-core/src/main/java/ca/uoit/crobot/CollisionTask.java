@@ -14,6 +14,7 @@ public final class CollisionTask extends NavigationTask {
 
     private LidarScan lastScan = null;
     private DECISION decision = DECISION.NOTHING;
+    private DECISION prevDecision = DECISION.NOTHING;
     private long lastDecision = 0;
 
     private CollisionTask() {
@@ -29,14 +30,46 @@ public final class CollisionTask extends NavigationTask {
     @Override
     public void run(final @NonNull CRobot robot) {
 
-        while (decision != DECISION.NOTHING) {
-            if (decision == DECISION.RIGHT) {
-                robot.getDriveController().turn(22);
+        DECISION curDecision;
+
+        if(prevDecision == DECISION.RIGHT) {
+            curDecision = DECISION.LEFT;
+        } else if(prevDecision == DECISION.LEFT) {
+            curDecision = DECISION.RIGHT;
+        } else {
+            curDecision = decision;
+        }
+
+        prevDecision = curDecision;
+
+        try {
+            // Backup
+            robot.getDriveController().driveToDistance(-20, 100);
+
+            // Turn
+            if (curDecision == DECISION.RIGHT) {
+                robot.getDriveController().turnToAngle(20, 90);
             } else {
-                robot.getDriveController().turn(-22);
+                robot.getDriveController().turnToAngle(-20, 90);
             }
 
+            // Check if something is in front of the robot
             makeDecision(robot);
+
+            // If there is nothing in front of the robot, drive forward
+            if(decision == DECISION.NOTHING) {
+                robot.getDriveController().driveToDistance(20, 200);
+            }
+
+            // Turn again
+            if (curDecision == DECISION.RIGHT) {
+                robot.getDriveController().turnToAngle(20, 90);
+            } else {
+                robot.getDriveController().turnToAngle(-20, 90);
+            }
+
+        } catch (InterruptedException e) {
+
         }
 
         robot.getDriveController().stop();

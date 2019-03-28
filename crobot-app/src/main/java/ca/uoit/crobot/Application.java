@@ -6,6 +6,7 @@ import ca.uoit.crobot.comm.Server;
 import ca.uoit.crobot.event.ConnectionListener;
 import ca.uoit.crobot.event.MessageListener;
 import ca.uoit.crobot.hardware.AdafruitDCMotor;
+import ca.uoit.crobot.hardware.InfarredSensor;
 import ca.uoit.crobot.hardware.LidarScan;
 import ca.uoit.crobot.hardware.X4Lidar;
 import ca.uoit.crobot.messages.*;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 public class Application {
 
-    private static final CRobot robot = new CRobot(AdafruitDCMotor.MOTOR1, AdafruitDCMotor.MOTOR2, AdafruitDCMotor.MOTOR3, new X4Lidar());
+    private static final CRobot robot = new CRobot(AdafruitDCMotor.MOTOR1, AdafruitDCMotor.MOTOR2, AdafruitDCMotor.MOTOR3, new X4Lidar(), InfarredSensor.DROP_SENSOR);
     private static long lastDriveCommand = 0;
 
     public static void main(String[] args) throws InterruptedException, TimeoutException {

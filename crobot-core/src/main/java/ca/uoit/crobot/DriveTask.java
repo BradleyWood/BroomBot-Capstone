@@ -26,8 +26,6 @@ public class DriveTask extends NavigationTask {
     private boolean[][] visited;
     private long initTime;
 
-    private Thread driveThread;
-
     private DriveTask() {
         super(1000 / 7 + 50, TimeUnit.MILLISECONDS);
     }
@@ -41,7 +39,7 @@ public class DriveTask extends NavigationTask {
     @Override
     public boolean activate(final @NonNull CRobot cRobot) {
         // require 5 seconds of buffer time to build a map;
-        return System.currentTimeMillis() - 5000 > initTime && (driveThread == null || !driveThread.isAlive());
+        return System.currentTimeMillis() - 5000 > initTime;
     }
 
     @Override
@@ -51,61 +49,68 @@ public class DriveTask extends NavigationTask {
 
     @Override
     public void run(final @NonNull CRobot robot) {
+
         try {
+            robot.getDriveController().drivePID(20);
 
-            System.out.println("Starting Drive Task");
+            while(true) {
+                Thread.sleep(100);
+            }
 
-            final List<Point> targets = getTargets(robot);
+        } catch (Throwable t) {
+        }
 
-            if(driveThread == null || !driveThread.isAlive()) {
+        /*try {
+
+            final List<Point> targets = new ArrayList<>(); //= getTargets(robot);
+
+            targets.add(new Point(robot.getX() + 10, robot.getY()));
+            targets.add(new Point(robot.getX() + 10, robot.getY() + 10));
+            targets.add(new Point(robot.getX(), robot.getY() + 10));
+            targets.add(new Point(robot.getX(), robot.getY()));
+
+            while(!targets.isEmpty()) {
                 Point target = targets.get(0);
 
-                driveThread = new Thread(() -> {
-                    driveToTarget(robot, target);
-                });
-                driveThread.start();
-                System.out.println("Starting Drive Thread");
+                // Change target units to be in MM
+                target.x *= MM_PER_PIXEL;
+                target.y *= MM_PER_PIXEL;
+
+                Position pos = robot.getPosition();
+
+                double normalizedDegrees = pos.theta_degrees - 360.0 * Math.floor((pos.theta_degrees + Math.PI) / 360.0);
+
+                // Calculate the amount the robot needs to turn in degrees
+                double dTheta = normalizedDegrees + 180 * Math.atan2(target.x - pos.x_mm, pos.y_mm - target.y) / Math.PI;
+
+                // Normalize dTheta
+                if (Math.abs(dTheta) > 180) {
+                    dTheta = dTheta - (Math.signum(dTheta) * 360);
+                }
+
+                // Calculate the distance the robot has to travel
+                double distance = Math.sqrt(Math.pow(target.y - pos.y_mm, 2) + Math.pow(target.x - pos.x_mm, 2));
+
+                System.out.println("Angle: " + dTheta + "\tDir: " + pos.theta_degrees + "\tDelta: " + (180 * Math.atan2(target.x - pos.x_mm, pos.y_mm - target.y) / Math.PI));
+                System.out.println("TargetY: " + target.y + "\tTargetX: " + target.x + "\tCurrentY: " + pos.y_mm + "\tCurrentX: " + pos.x_mm + "\tDistance: " + distance);
+
+                // Synchronous Drive methods
+                robot.getDriveController().turnToAngle(5, dTheta);
+                robot.getDriveController().driveToDistance(5, distance);
+
+                Thread.sleep(1000);
 
                 // Remove the target from the list
                 targets.remove(0);
             }
 
         } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void driveToTarget(final @NonNull CRobot robot, Point target) {
-        // Change target units to be in MM
-        target.x *= MM_PER_PIXEL;
-        target.y *= MM_PER_PIXEL;
-
-        Position pos = robot.getPosition();
-
-        double normalizedDegrees = pos.theta_degrees - 360.0 * Math.floor((pos.theta_degrees + Math.PI) / 360.0);
-
-        // Calculate the amount the robot needs to turn in degrees
-        double dTheta = normalizedDegrees + 180 * Math.atan2(target.x - pos.x_mm, pos.y_mm - target.y) / Math.PI;
-
-        // Normalize dTheta
-        if (Math.abs(dTheta) > 180) {
-            dTheta = dTheta - (Math.signum(dTheta) * 360);
-        }
-
-        // Calculate the distance the robot has to travel
-        double distance = Math.sqrt(Math.pow(target.y - pos.y_mm, 2) + Math.pow(target.x - pos.x_mm, 2));
-
-        System.out.println("Angle: " + dTheta + "\tDir: " + pos.theta_degrees + "\tDelta: " + (180 * Math.atan2(target.x - pos.x_mm, pos.y_mm - target.y) / Math.PI));
-        System.out.println("TargetY: " + target.y + "\tTargetX: " + target.x + "\tCurrentY: " + pos.y_mm + "\tCurrentX: " + pos.x_mm + "\tDistance: " + distance);
-
-        // Synchronous Drive methods
-        robot.getDriveController().turnToAngle(20, dTheta);
-        robot.getDriveController().driveToDistance(20, distance);
+        }*/
     }
 
     @Override
     public void onInterrupt(final @NonNull CRobot cRobot) {
-
+        cRobot.getDriveController().stop();
     }
 
     /**
