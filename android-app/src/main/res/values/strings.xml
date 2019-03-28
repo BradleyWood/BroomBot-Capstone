@@ -31,4 +31,7 @@
     <string name="total_area">Total Area (sq ft)</string>
     <string name="control_the_robot">Control the robot</string>
     <string name="begin_cleaning">Press to begin cleaning</string>
+    <string name="update_failed">Failed to update</string>
+    <string name="unable_update">Unable to check for updates</string>
+    <string name="must_select_device">You must select a device</string>
 </resources>

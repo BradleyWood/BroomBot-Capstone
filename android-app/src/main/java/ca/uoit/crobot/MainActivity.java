@@ -19,7 +19,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,8 +39,10 @@ import ca.uoit.crobot.messages.*;
 
 public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFragmentInteractionListener,
         ConnectionListener, DeviceSelectionFragment.OnDeviceSelectionInteractionListener,
-        MainFragment.OnMainFragmentInteractionListener {
+        MainFragment.OnMainFragmentInteractionListener,
+        SettingsFragment.OnSettingsInteractionListener {
 
+    private static final String BASE_URL = "http://crobot.bradleyjwood.me:9090";
     private static final String ROBOT_UUID = "396badb4-1837-11e9-ab14-d663bd873d93";
 
     private final List<BluetoothDevice> deviceList = Collections.synchronizedList(new LinkedList<>());
@@ -100,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
                 mainFragment.setCleaningText("Press to begin cleaning");
             }
         };
-     }
+    }
 
     @Override
     protected void onResume() {
@@ -286,10 +292,84 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     }
 
     public void setBattery(final int percentage) {
-        final ProgressBar progressBar = findViewById (R.id.battery);
+        final ProgressBar progressBar = findViewById(R.id.battery);
         progressBar.setProgress(percentage);
 
-        final TextView textview = findViewById (R.id.batteryText);
+        final TextView textview = findViewById(R.id.batteryText);
         textview.setText(String.format("%d", percentage));
+    }
+
+    @Override
+    public void onUpdate() {
+        new Thread(this::updateToLatest).start();
+    }
+
+    public void updateToLatest() {
+        try {
+            final String latestVersion = getLatestVersion();
+
+            if (latestVersion != null && !latestVersion.isEmpty()) {
+                update(latestVersion);
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+            e.printStackTrace();
+        }
+    }
+
+    public void update(final String version) {
+        if (connection == null || !connection.isRunning()) {
+            runOnUiThread(() -> {
+                Toast.makeText(this, getString(R.string.must_select_device), Toast.LENGTH_LONG).show();
+            });
+            return;
+        }
+
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final boolean success = download(BASE_URL + "/download?version=" + version, baos);
+
+        if (success) {
+            final UpdateRequest request = new UpdateRequest(version, baos.toByteArray());
+
+            try {
+                connection.send(request);
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(this, getString(R.string.update_failed), Toast.LENGTH_LONG).show();
+                });
+            }
+        } else {
+            runOnUiThread(() -> {
+                Toast.makeText(this, getString(R.string.unable_update), Toast.LENGTH_LONG).show();
+            });
+        }
+    }
+
+    public String getLatestVersion() {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        if (!download(BASE_URL + "/version", baos)) {
+            return null;
+        }
+
+        return baos.toString();
+    }
+
+    public boolean download(final String link, final OutputStream os) {
+        try (final BufferedInputStream in = new BufferedInputStream(new URL(link).openStream())) {
+            final byte[] buf = new byte[1024];
+
+            int len;
+            while ((len = in.read(buf, 0, 1024)) != -1) {
+                os.write(buf, 0, len);
+            }
+
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 }
