@@ -38,6 +38,11 @@ public class MainFragment extends Fragment {
             if (mListener != null) {
                 running = !running;
                 mListener.onToggleDevice(running);
+                if (running) {
+                    setCleaningText("Cleaning");
+                } else {
+                    setCleaningText("Press to begin cleaning");
+                }
             }
         });
 
