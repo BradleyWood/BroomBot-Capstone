@@ -49,6 +49,7 @@ public class DriveTask extends NavigationTask {
 
     @Override
     public void run(final @NonNull CRobot robot) {
+        System.out.println("Drive Task");
 
         try {
             robot.getDriveController().drivePID(20);

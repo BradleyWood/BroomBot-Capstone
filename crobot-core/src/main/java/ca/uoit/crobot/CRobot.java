@@ -74,7 +74,6 @@ public @Data class CRobot {
             navTask.init(this);
             executorService.scheduleAtFixedRate(() -> {
 
-                System.out.println("Running");
                 if (((currentTask == null || currentTask.canInterrupt() || navTaskFuture.isDone()))
                         && navTask.activate(this) && (navTaskFuture == null || navTaskFuture.isDone() || navTask != currentTask)) {
                     try {

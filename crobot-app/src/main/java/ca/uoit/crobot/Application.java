@@ -37,7 +37,6 @@ public class Application {
         }
 
         robot.init();
-        robot.start();
 
         final Server server = new Server();
         final BluetoothServer bts = new BluetoothServer();
@@ -67,7 +66,7 @@ public class Application {
                 if (command.getCommand() == DriveCommand.COMMAND.FORWARD) {
                     robot.getDriveController().drive(command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.BACKWARD) {
-                    robot.getDriveController().drive(command.getSpeed());
+                    robot.getDriveController().drive(-command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.LEFT_TURN) {
                     robot.getDriveController().turn(-command.getSpeed());
                 } else if (command.getCommand() == DriveCommand.COMMAND.RIGHT_TURN) {

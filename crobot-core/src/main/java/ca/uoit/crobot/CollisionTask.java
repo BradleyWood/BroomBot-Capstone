@@ -29,6 +29,7 @@ public final class CollisionTask extends NavigationTask {
 
     @Override
     public void run(final @NonNull CRobot robot) {
+        System.out.println("Collision Task");
 
         DECISION curDecision;
 
