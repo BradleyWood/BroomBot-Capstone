@@ -23,6 +23,8 @@ public class MainFragment extends Fragment {
     private Button button;
     private TextView cleaningText;
 
+    private boolean running = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -34,7 +36,8 @@ public class MainFragment extends Fragment {
 
         button.setOnClickListener(v -> {
             if (mListener != null) {
-                mListener.onToggleDevice(v.isEnabled());
+                running = !running;
+                mListener.onToggleDevice(running);
             }
         });
 
@@ -43,6 +46,17 @@ public class MainFragment extends Fragment {
         }
 
         return parentView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnMainFragmentInteractionListener) {
+            mListener = (OnMainFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
     public void setButtonEnabled(boolean enabled) {
