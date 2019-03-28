@@ -44,7 +44,7 @@ public class SLAMTask extends PeriodicRobotTask {
         final int[] scanMM = new int[size];
         final float[] ranges = scan.getRanges();
 
-        for (int i = 0, j = 0; i < scanMM.length && j < ranges.length; i++, j += 2) {
+        for (int i = 0, j = 0; i < scanMM.length && j < ranges.length; i++, j += 4) {
             if (ranges[j] < 0.25) {
                 scanMM[i] = 0;
             } else {

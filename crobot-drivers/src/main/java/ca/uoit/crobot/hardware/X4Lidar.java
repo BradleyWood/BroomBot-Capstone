@@ -69,7 +69,7 @@ public class X4Lidar implements Lidar {
 
     @Override
     public Laser getLaserConfig() {
-        return new Laser(640 / 2, 7, 360, 10000, 0, 0);
+        return new Laser(640 / 4, 7, 360, 10000, 0, 0);
     }
 
     @Override

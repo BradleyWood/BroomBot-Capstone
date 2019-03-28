@@ -1,9 +1,6 @@
 package ca.uoit.crobot;
 
-import ca.uoit.crobot.hardware.Device;
-import ca.uoit.crobot.hardware.Lidar;
-import ca.uoit.crobot.hardware.LidarScan;
-import ca.uoit.crobot.hardware.Motor;
+import ca.uoit.crobot.hardware.*;
 import ca.uoit.crobot.odometry.Drive;
 import ca.uoit.crobot.task.NavigationTask;
 import ca.uoit.crobot.task.PeriodicRobotTask;
@@ -34,17 +31,18 @@ public @Data class CRobot {
     private final Motor brushMotor;
     private final Lidar lidar;
     private Drive driveController;
+    private final DigitalSensor dropSensor;
 
     private boolean initialized = false;
 
     private final List<PeriodicRobotTask> periodicTasks = Arrays.asList(ScanTask.INSTANCE, SLAMTask.INSTANCE, CleanTask.INSTANCE);
-    private final List<NavigationTask> navTasks = Arrays.asList(CollisionTask.INSTANCE, DriveTask.INSTANCE);//ForwardTask.INSTANCE, CollisionTask.INSTANCE, DriveTask.INSTANCE);
+    private final List<NavigationTask> navTasks = Arrays.asList(DriveTask.INSTANCE, CollisionTask.INSTANCE);//, DropTask.INSTANCE);//ForwardTask.INSTANCE, CollisionTask.INSTANCE, DriveTask.INSTANCE);
     private final Lock lock = new ReentrantLock();
     private NavigationTask currentTask = null;
     private Future navTaskFuture;
 
     public void init() throws TimeoutException {
-        parallelInit(leftMotor, rightMotor, lidar);
+        parallelInit(leftMotor, rightMotor, lidar, dropSensor);
         lidar.stopRotation();
         driveController = new Drive(leftMotor, rightMotor);
         initialized = true;
@@ -75,20 +73,25 @@ public @Data class CRobot {
         for (final NavigationTask navTask : navTasks) {
             navTask.init(this);
             executorService.scheduleAtFixedRate(() -> {
+
                 if (((currentTask == null || currentTask.canInterrupt() || navTaskFuture.isDone()))
-                        && navTask.activate(this) && navTask != currentTask) {
+                        && navTask.activate(this) && (navTaskFuture == null || navTaskFuture.isDone() || navTask != currentTask)) {
                     try {
                         if (lock.tryLock(50, TimeUnit.MILLISECONDS)) {
-                            currentTask.onInterrupt(this);
 
                             if (navTaskFuture != null) {
                                 navTaskFuture.cancel(true);
                                 while (!navTaskFuture.isDone()) ;
                             }
 
+                            if (currentTask != null) {
+                                currentTask.onInterrupt(this);
+                            }
+
                             currentTask = navTask;
                             navTaskFuture = executorService.submit(() -> navTask.run(this));
                         }
+
                     } catch (InterruptedException ignored) {
                     } finally {
                         lock.unlock();
