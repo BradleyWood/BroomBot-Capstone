@@ -291,11 +291,6 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
         sendMessage(new DriveCommand(30, DriveCommand.COMMAND.BACKWARD));
     }
 
-    @Override
-    public void onNothing() {
-        sendMessage(new DriveCommand(0, DriveCommand.COMMAND.PROGRAM_STOP));
-    }
-
     public void setBattery(final int percentage) {
         final ProgressBar progressBar = findViewById(R.id.battery);
         progressBar.setProgress(percentage);

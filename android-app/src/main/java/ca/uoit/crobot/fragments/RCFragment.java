@@ -45,9 +45,6 @@ public class RCFragment extends Fragment {
                             Log.i(TAG, "Moving backward");
                             mListener.onBackward();
                             break;
-                        default :
-                            mListener.onNothing();
-                            break;
                     }
                 }
 
@@ -165,8 +162,6 @@ public class RCFragment extends Fragment {
         void onForward();
 
         void onBackward();
-
-        void onNothing();
     }
 
     class MotionHelper {
