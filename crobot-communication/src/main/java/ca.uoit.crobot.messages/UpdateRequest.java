@@ -7,12 +7,10 @@ import lombok.EqualsAndHashCode;
 public @Data class UpdateRequest extends Request {
 
     private final String version;
+    private final byte[] contents;
 
-    public UpdateRequest() {
-        this(null);
-    }
-
-    public UpdateRequest(final String version) {
+    public UpdateRequest(final String version, final byte[] contents) {
         this.version = version;
+        this.contents = contents;
     }
 }

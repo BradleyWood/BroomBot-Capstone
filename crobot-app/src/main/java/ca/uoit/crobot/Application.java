@@ -11,7 +11,9 @@ import ca.uoit.crobot.hardware.X4Lidar;
 import ca.uoit.crobot.messages.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public class Application {
@@ -83,15 +85,17 @@ public class Application {
 
             System.out.println(request);
             if (request instanceof StatusRequest) {
-                // no extra attributes as of yet
-                reply = new StatusReply(new HashMap<>(), Utility.getApplicationVersion());
-            } else if (request instanceof UpdateRequest) {
-                final String version = ((UpdateRequest) request).getVersion();
+                final Map<String, Serializable> attributes = new HashMap<>();
 
-                if (version == null) {
-                    Utility.updateToLatest();
-                } else {
-                    Utility.update(version);
+                attributes.put("initialized", robot.isInitialized());
+                attributes.put("cleaning", robot.isRunning());
+
+                reply = new StatusReply(attributes, Utility.getApplicationVersion());
+            } else if (request instanceof UpdateRequest) {
+                final byte[] contents = ((UpdateRequest) request).getContents();
+
+                if (contents != null) {
+                    Utility.update(contents);
                 }
 
                 reply = new Reply(false, "Failed to update");

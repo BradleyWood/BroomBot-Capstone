@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 import ca.uoit.crobot.R;
 import ca.uoit.crobot.adaptors.DeviceAdaptor;
 
@@ -23,7 +25,7 @@ public class DeviceSelectionFragment extends Fragment {
     }
 
     public void setRefreshing(final boolean refreshing) {
-        getActivity().runOnUiThread(() -> swipeRefreshLayout.setRefreshing(refreshing));
+        Objects.requireNonNull(getActivity()).runOnUiThread(() -> swipeRefreshLayout.setRefreshing(refreshing));
     }
 
     public void addDevice(final String name, final String address) {

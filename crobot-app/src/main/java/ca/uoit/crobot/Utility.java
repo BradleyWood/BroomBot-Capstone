@@ -25,6 +25,19 @@ public class Utility {
         }
     }
 
+    public static void update(final byte[] contents) {
+        try {
+            final File file = getApplicationFile();
+            final FileOutputStream fos = new FileOutputStream(file);
+            fos.write(contents);
+
+            Runtime.getRuntime().exec("java -jar " + file.getAbsolutePath());
+            System.exit(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void update(final String version) {
         final File file = getApplicationFile();
         final boolean success = download(BASE_URL + "/download?version=" + version, file);
@@ -81,7 +94,7 @@ public class Utility {
         try {
             final Enumeration<URL> resources = Utility.class.getClassLoader()
                     .getResources("META-INF/MANIFEST.MF");
-            while (resources.hasMoreElements()) {
+            if (resources.hasMoreElements()) {
                 final Manifest manifest = new Manifest(resources.nextElement().openStream());
                 final Attributes attributes = manifest.getMainAttributes();
 
