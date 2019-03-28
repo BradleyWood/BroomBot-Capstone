@@ -24,6 +24,7 @@ public class MainFragment extends Fragment {
     private TextView cleaningText;
 
     private boolean running = false;
+    private boolean buttonEnabled = false;
 
     @Nullable
     @Override
@@ -33,6 +34,8 @@ public class MainFragment extends Fragment {
 
         button = parentView.findViewById(R.id.custom_button);
         cleaningText = parentView.findViewById(R.id.cleaningText);
+
+        button.setEnabled(buttonEnabled);
 
         button.setOnClickListener(v -> {
             if (mListener != null) {
@@ -65,7 +68,7 @@ public class MainFragment extends Fragment {
     }
 
     public void setButtonEnabled(boolean enabled) {
-        button.setEnabled(enabled);
+        buttonEnabled = enabled;
     }
 
     public void setCleaningText(final String text) {

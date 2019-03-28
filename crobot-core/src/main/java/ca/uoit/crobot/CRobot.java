@@ -35,7 +35,7 @@ public @Data class CRobot {
 
     private boolean initialized = false;
 
-    private final List<PeriodicRobotTask> periodicTasks = Arrays.asList(ScanTask.INSTANCE); //, SLAMTask.INSTANCE, CleanTask.INSTANCE);
+    private final List<PeriodicRobotTask> periodicTasks = Arrays.asList(ScanTask.INSTANCE, CleanTask.INSTANCE); //, SLAMTask.INSTANCE);
     private final List<NavigationTask> navTasks = Arrays.asList(DriveTask.INSTANCE, CollisionTask.INSTANCE, DropTask.INSTANCE);
     private final Lock lock = new ReentrantLock();
     private NavigationTask currentTask = null;

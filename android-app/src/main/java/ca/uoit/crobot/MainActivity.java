@@ -1,5 +1,6 @@
 package ca.uoit.crobot;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +25,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -59,6 +62,11 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, 1);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, 1);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 1);
 
         deviceSelectionFragment = new DeviceSelectionFragment();
 
@@ -173,7 +181,11 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
         for (final BluetoothDevice device : deviceList) {
             if (address.equals(device.getAddress())) {
                 try {
-                    final BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(UUID.fromString(ROBOT_UUID));
+                    final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+
+                    adapter.cancelDiscovery();
+
+                    BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(UUID.fromString(ROBOT_UUID));
 
                     if (connection != null) {
                         connection.close();
