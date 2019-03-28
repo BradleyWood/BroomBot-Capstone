@@ -158,6 +158,7 @@ public @Data class CRobot {
 
         leftMotor.stop();
         rightMotor.stop();
+        driveController.stop();
         brushMotor.stop();
         lidar.stopRotation();
     }
