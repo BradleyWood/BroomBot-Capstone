@@ -15,6 +15,6 @@ public class CleanTask extends PeriodicRobotTask {
 
     @Override
     public void run(final @NonNull CRobot robot) {
-        robot.getBrushMotor().setSpeed(50);
+        robot.getBrushMotor().setSpeed(75);
     }
 }
