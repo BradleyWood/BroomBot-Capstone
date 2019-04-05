@@ -50,6 +50,9 @@ public class Application {
         bts.start();
 
         while (true) {
+            if (System.currentTimeMillis() - 500 > lastDriveCommand && !robot.isRunning()) {
+                robot.stop();
+            }
 
             Thread.sleep(500);
         }
