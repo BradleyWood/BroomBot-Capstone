@@ -81,9 +81,7 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
 
         final BottomNavigationView navView = findViewById(R.id.navigation);
         navView.setOnNavigationItemSelectedListener(menuItem -> {
-            if (menuItem.getItemId() == R.id.navigation_maps) {
-                displayFragment(mapsFragment);
-            } else if (menuItem.getItemId() == R.id.navigation_rc) {
+            if (menuItem.getItemId() == R.id.navigation_rc) {
                 displayFragment(rcFragment);
             } else if (menuItem.getItemId() == R.id.navigation_connect) {
                 displayFragment(deviceSelectionFragment);
@@ -344,17 +342,24 @@ public class MainActivity extends AppCompatActivity implements RCFragment.OnRCFr
             final UpdateRequest request = new UpdateRequest(version, baos.toByteArray());
 
             try {
-                connection.send(request);
+                final Reply reply = connection.send(request);
+
+                if (!reply.isSuccess())
+                    reportUpdateFailure();
             } catch (Exception e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(this, getString(R.string.update_failed), Toast.LENGTH_LONG).show();
-                });
+                reportUpdateFailure();
             }
         } else {
             runOnUiThread(() -> {
                 Toast.makeText(this, getString(R.string.unable_update), Toast.LENGTH_LONG).show();
             });
         }
+    }
+
+    private void reportUpdateFailure() {
+        runOnUiThread(() -> {
+            Toast.makeText(this, getString(R.string.update_failed), Toast.LENGTH_LONG).show();
+        });
     }
 
     public String getLatestVersion() {
